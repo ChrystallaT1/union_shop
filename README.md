@@ -8,7 +8,7 @@ The Union Shop is a Flutter reimplementation of the existing University of Ports
 
 **Important Note:** You should NOT implement the external UPSU website ([https://www.upsu.net/](https://www.upsu.net/)) that is linked in the navigation bar of the shop. Focus only on reimplementing the shop functionality from [https://shop.upsu.net](https://shop.upsu.net).
 
-_[SCREENSHOT PLACEHOLDER: Add screenshot highlighting the UPSU link that should NOT be implemented]_
+![Union Shop Header](https://raw.githubusercontent.com/manighahrmani/sandwich_shop/refs/heads/main/images/screenshot_union_site_header.png)
 
 ## Current Features
 
@@ -83,9 +83,9 @@ This command checks your environment and displays a report of the status of your
 4. Click "Create fork"
 5. Make a note of your forked repository URL (e.g., `https://github.com/YOUR-USERNAME/union_shop` where `YOUR-USERNAME` is your GitHub username)
 
-_[SCREENSHOT PLACEHOLDER: Add screenshot showing the Fork button]_
+![Fork Button](https://raw.githubusercontent.com/manighahrmani/sandwich_shop/refs/heads/main/images/screenshot_fork_button.png)
 
-_[SCREENSHOT PLACEHOLDER: Add screenshot showing the Public option when forking]_
+![Fork Settings](https://raw.githubusercontent.com/manighahrmani/sandwich_shop/refs/heads/main/images/screenshot_fork_settings.png)
 
 ### Step 2: Clone Your Forked Repository
 
@@ -131,7 +131,7 @@ This command downloads all the dependencies specified in the `pubspec.yaml` file
 
 ### Step 4: Run the Application
 
-This application is primarily designed to run on **web** and should be viewed in **mobile view** using browser developer tools.
+This application is primarily designed to run on **web** and should be viewed in **mobile view** using browser developer tools. We recommend using Google Chrome.
 
 #### Start the Flutter Web App
 
@@ -153,16 +153,14 @@ This will launch the app in Google Chrome.
 
 Once the app is running in Chrome:
 
-1. Open Chrome DevTools:
-   - **Windows**: Press `F12` or `Ctrl + Shift + I`
-   - **macOS**: Press `Cmd + Option + I`
-2. Click the "Toggle device toolbar" button (or press `Ctrl + Shift + M` on Windows, `Cmd + Shift + M` on macOS)
+1. Open Chrome DevTools by right-clicking on the page and selecting "Inspect" (or use the shortcut `F12`).
+2. Click the "Toggle device toolbar" button as shown in the screenshot below
 
 3. Select a mobile device preset (e.g., iPhone 12 Pro, Pixel 5) or set custom dimensions
 
-_[SCREENSHOT PLACEHOLDER: Add screenshot showing Chrome DevTools with mobile view enabled]_
+![Chrome DevTools Mobile View](https://raw.githubusercontent.com/manighahrmani/sandwich_shop/refs/heads/main/images/screenshot_chrome_devtools.png)
 
-_[SCREENSHOT PLACEHOLDER: Add screenshot showing the device toolbar toggle button]_
+![Device Selection](https://raw.githubusercontent.com/manighahrmani/sandwich_shop/refs/heads/main/images/screenshot_chrome_devtools_device_selection.png)
 
 ### Running Tests
 
