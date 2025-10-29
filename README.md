@@ -221,8 +221,7 @@ If things are completely broken and are unrecoverable, you can start fresh by re
 
 1. Delete your forked repository on GitHub (Settings → Danger Zone → Delete this repository)
 2. Fork the original repository again: [https://github.com/manighahrmani/union_shop](https://github.com/manighahrmani/union_shop)
-3. **Remember to keep it public!**
-4. Clone your fresh fork and start again
+3. Clone your fresh fork and start again
 
 Regular commits not only help you recover from mistakes, but also demonstrate your development process. Remember you are marked based on your commits.
 
