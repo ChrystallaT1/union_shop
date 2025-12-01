@@ -3,6 +3,7 @@ import 'package:union_shop/views/product/product_page.dart';
 import 'package:union_shop/views/home/home_screen.dart';
 import 'package:union_shop/views/about/about_screen.dart';
 import 'package:union_shop/views/collections/collections_screen.dart';
+import 'package:union_shop/views/collection/collection_detail_screen.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -25,6 +26,10 @@ class UnionShopApp extends StatelessWidget {
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutScreen(),
         '/collections': (context) => const CollectionsScreen(),
+        '/collection-detail': (context) => CollectionDetailScreen(
+              collectionName:
+                  ModalRoute.of(context)!.settings.arguments as String,
+            ),
       },
     );
   }

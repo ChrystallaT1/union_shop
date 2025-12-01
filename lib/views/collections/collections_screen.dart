@@ -203,8 +203,10 @@ class CollectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title collection coming soon!')),
+        Navigator.pushNamed(
+          context,
+          '/collection-detail',
+          arguments: title,
         );
       },
       child: Card(
