@@ -19,9 +19,7 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         // Button for Collections
         TextButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Collections coming soon')),
-            );
+            Navigator.pushNamed(context, '/collections');
           },
           child: const Text('Collections'),
         ),

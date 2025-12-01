@@ -18,12 +18,12 @@ A homepage that serves as the landing page for the Union Shop app, displaying st
 
 #### Acceptance Criteria
 
-- [ ] Homepage displays the "UPSU Union Shop" branding prominently
-- [ ] Homepage includes at least 3-4 featured product sections with hardcoded data
-- [ ] Layout is responsive and adapts to mobile view
-- [ ] Navigation bar is visible and accessible
-- [ ] Page loads without errors
-- [ ] All static content is properly formatted and readable
+- [✅] Homepage displays the "UPSU Union Shop" branding prominently
+- [✅] Homepage includes at least 3-4 featured product sections with hardcoded data
+- [✅] Layout is responsive and adapts to mobile view
+- [✅] Navigation bar is visible and accessible
+- [✅] Page loads without errors
+- [✅] All static content is properly formatted and readable
 
 ---
 
@@ -43,12 +43,12 @@ A separate informational page that provides details about the Union Shop, its pu
 
 #### Acceptance Criteria
 
-- [ ] About Us page is accessible via navigation bar
-- [ ] Page includes sections for Purpose, Goals, and Disclaimer
-- [ ] Content is well-formatted with proper headings and spacing
-- [ ] Page uses consistent styling with the rest of the app
-- [ ] Navigation back to other pages works correctly
-- [ ] Page is responsive on mobile devices
+- [✅] About Us page is accessible via navigation bar
+- [✅] Page includes sections for Purpose, Goals, and Disclaimer
+- [✅] Content is well-formatted with proper headings and spacing
+- [✅] Page uses consistent styling with the rest of the app
+- [✅] Navigation back to other pages works correctly
+- [✅] Page is responsive on mobile devices
 
 ---
 
@@ -68,12 +68,12 @@ A footer component that appears at the bottom of pages, containing dummy links, 
 
 #### Acceptance Criteria
 
-- [ ] Footer component is created and reusable
-- [ ] Footer includes copyright notice (© 2025 UPSU Union Shop)
-- [ ] Footer includes at least 3 dummy links (Privacy, Terms, Contact)
-- [ ] Footer displays "This is a coursework project, not the real shop" message
-- [ ] Footer is present on at least one page (can be extended to all pages)
-- [ ] Footer styling is consistent with app theme
+- [✅] Footer component is created and reusable
+- [✅] Footer includes copyright notice (© 2025 UPSU Union Shop)
+- [✅] Footer includes at least 3 dummy links (Privacy, Terms, Contact)
+- [✅] Footer displays "This is a coursework project, not the real shop" message
+- [✅ ] Footer is present on at least one page (can be extended to all pages)
+- [✅] Footer styling is consistent with app theme
 
 ---
 
@@ -93,12 +93,12 @@ A page displaying various product collections using hardcoded data. The page sho
 
 #### Acceptance Criteria
 
-- [ ] Collections page displays at least 3-4 different collections
-- [ ] Each collection shows a title and placeholder image
-- [ ] Page is accessible via navigation bar
-- [ ] Layout is responsive and mobile-friendly
-- [ ] Hardcoded data is acceptable for this feature
-- [ ] Page loads without errors
+- [✅] Collections page displays at least 3-4 different collections
+- [✅] Each collection shows a title and placeholder image
+- [✅] Page is accessible via navigation bar
+- [✅] Layout is responsive and mobile-friendly
+- [✅] Hardcoded data is acceptable for this feature
+- [✅] Page loads without errors
 
 ---
 

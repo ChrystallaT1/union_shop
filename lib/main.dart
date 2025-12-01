@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/views/product/product_page.dart';
 import 'package:union_shop/views/home/home_screen.dart';
 import 'package:union_shop/views/about/about_screen.dart';
+import 'package:union_shop/views/collections/collections_screen.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -23,6 +24,7 @@ class UnionShopApp extends StatelessWidget {
       routes: {
         '/product': (context) => const ProductPage(),
         '/about': (context) => const AboutScreen(),
+        '/collections': (context) => const CollectionsScreen(),
       },
     );
   }
