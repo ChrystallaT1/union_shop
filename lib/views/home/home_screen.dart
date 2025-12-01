@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/views/common/union_navbar.dart';
+import 'package:union_shop/views/common/union_footer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,6 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const UnionNavbar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -263,24 +266,10 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Footer
-            Container(
-              width: double.infinity,
-              color: Colors.grey[50],
-              padding: const EdgeInsets.all(24),
-              child: const Text(
-                'Placeholder Footer',
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
           ],
         ),
       ),
+      bottomNavigationBar: const UnionFooter(),
     );
   }
 }
