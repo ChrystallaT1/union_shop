@@ -25,6 +25,7 @@ class HomeScreen extends StatelessWidget {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
+      // AppBar scrolls with content (not pinned/floating)
       appBar: const UnionNavbar(),
       body: SingleChildScrollView(
         child: Column(
@@ -167,10 +168,12 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            // Footer is inside the SingleChildScrollView, so it appears at the end
+            const UnionFooter(),
           ],
         ),
       ),
-      bottomNavigationBar: const UnionFooter(),
     );
   }
 }
