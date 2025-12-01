@@ -118,12 +118,12 @@ A page showing products within a specific collection, including product listings
 
 #### Acceptance Criteria
 
-- [ ] Collection page displays products in a grid or list layout
-- [ ] Each product shows image, name, and price
-- [ ] Page includes dropdown/filter widgets (functionality not required yet)
-- [ ] Hardcoded data is acceptable
-- [ ] Page is responsive on mobile devices
-- [ ] Navigation to individual product pages works (if implemented)
+- [✅] Collection page displays products in a grid or list layout
+- [✅] Each product shows image, name, and price
+- [✅] Page includes dropdown/filter widgets (functionality not required yet)
+- [✅] Hardcoded data is acceptable
+- [✅] Page is responsive on mobile devices
+- [✅] Navigation to individual product pages works (if implemented)
 
 ---
 
@@ -143,13 +143,13 @@ A detailed product page showing product information, images, descriptions, and a
 
 #### Acceptance Criteria
 
-- [ ] Product page displays product name, price, and description
-- [ ] Page includes product image(s)
-- [ ] Dropdown menus for size/color/options are present (don't need to function yet)
-- [ ] "Add to Cart" button is visible (doesn't need to work yet)
-- [ ] Hardcoded data is acceptable
-- [ ] Page is accessible via navigation or collection page
-- [ ] Layout is responsive and mobile-friendly
+- [✅] Product page displays product name, price, and description
+- [✅] Page includes product image(s)
+- [✅] Dropdown menus for size/color/options are present (don't need to function yet)
+- [✅] "Add to Cart" button is visible (doesn't need to work yet)
+- [✅] Hardcoded data is acceptable
+- [✅] Page is accessible via navigation or collection page
+- [✅] Layout is responsive and mobile-friendly
 
 ---
 
