@@ -19,14 +19,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width for responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
+    final isTablet = screenWidth >= 600 && screenWidth < 1024;
+
     return Scaffold(
       appBar: const UnionNavbar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero Section
+            // Hero Section - Responsive height and text sizing
             SizedBox(
-              height: 400,
+              height: isMobile ? 300 : (isTablet ? 350 : 400),
               width: double.infinity,
               child: Stack(
                 children: [
@@ -48,46 +53,54 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Content overlay
+                  // Content overlay - Responsive positioning and sizing
                   Positioned(
-                    left: 24,
-                    right: 24,
-                    top: 80,
+                    left: isMobile ? 16 : 24,
+                    right: isMobile ? 16 : 24,
+                    top: isMobile ? 40 : 80,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           'Placeholder Hero Title',
                           style: TextStyle(
-                            fontSize: 32,
+                            fontSize: isMobile ? 24 : (isTablet ? 28 : 32),
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                             height: 1.2,
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
-                        const Text(
+                        SizedBox(height: isMobile ? 12 : 16),
+                        Text(
                           "This is placeholder text for the hero section.",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: isMobile ? 16 : (isTablet ? 18 : 20),
                             color: Colors.white,
                             height: 1.5,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 32),
+                        SizedBox(height: isMobile ? 24 : 32),
                         ElevatedButton(
                           onPressed: placeholderCallbackForButtons,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF4d2963),
                             foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile ? 24 : 32,
+                              vertical: isMobile ? 12 : 16,
+                            ),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.zero,
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'BROWSE PRODUCTS',
-                            style: TextStyle(fontSize: 14, letterSpacing: 1),
+                            style: TextStyle(
+                              fontSize: isMobile ? 12 : 14,
+                              letterSpacing: 1,
+                            ),
                           ),
                         ),
                       ],
@@ -97,29 +110,32 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Products Section
+            // Products Section - Responsive padding and grid
             Container(
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding:
+                    EdgeInsets.all(isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'PRODUCTS SECTION',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: isMobile ? 18 : 20,
                         color: Colors.black,
                         letterSpacing: 1,
                       ),
                     ),
-                    const SizedBox(height: 48),
+                    SizedBox(height: isMobile ? 24 : 48),
                     GridView.count(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      crossAxisCount:
-                          MediaQuery.of(context).size.width > 600 ? 2 : 1,
-                      crossAxisSpacing: 24,
-                      mainAxisSpacing: 48,
+                      // Responsive grid columns: 1 for mobile, 2 for tablet, 4 for desktop
+                      crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
+                      crossAxisSpacing: isMobile ? 16 : 24,
+                      mainAxisSpacing: isMobile ? 24 : 48,
+                      childAspectRatio:
+                          isMobile ? 0.75 : (isTablet ? 0.7 : 0.65),
                       children: const [
                         ProductCard(
                           title: 'Placeholder Product 1',
@@ -184,6 +200,7 @@ class ProductCard extends StatelessWidget {
             child: Image.network(
               imageUrl,
               fit: BoxFit.cover,
+              width: double.infinity,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.grey[300],
@@ -191,27 +208,31 @@ class ProductCard extends StatelessWidget {
                     child: Icon(
                       Icons.image_not_supported,
                       color: Colors.grey,
+                      size: 48,
                     ),
                   ),
                 );
               },
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 14, color: Colors.black),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                price,
-                style: const TextStyle(fontSize: 13, color: Colors.grey),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  price,
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+              ],
+            ),
           ),
         ],
       ),
