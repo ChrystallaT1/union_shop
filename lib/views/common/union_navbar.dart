@@ -34,6 +34,13 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
           },
           child: const Text('Sale'),
         ),
+        TextButton(
+          //button for about us page
+          onPressed: () {
+            Navigator.pushNamed(context, '/about');
+          },
+          child: const Text('About Us'),
+        ),
         // Button for Account
         TextButton(
           onPressed: () {
