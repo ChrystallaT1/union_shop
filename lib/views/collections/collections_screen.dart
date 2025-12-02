@@ -1,200 +1,414 @@
 import 'package:flutter/material.dart';
+import 'package:union_shop/models/collection_model.dart';
+import 'package:union_shop/services/collections_service.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
-import 'package:union_shop/views/common/union_footer.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/views/common/union_footer.dart';
 
-// screen displaying product collections
-class CollectionsScreen extends StatelessWidget {
+class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 600;
-    final isTablet = screenWidth >= 600 && screenWidth < 1024;
+  State<CollectionsScreen> createState() => _CollectionsScreenState();
+}
 
+class _CollectionsScreenState extends State<CollectionsScreen> {
+  final CollectionsService _collectionsService = CollectionsService();
+
+  String _sortBy = 'name';
+  bool _sortAscending = true;
+  String _filterCategory = 'all';
+  int _currentPage = 0;
+  final int _itemsPerPage = 6;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const UnionNavbar(),
       drawer: const MobileDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(
-                vertical: isMobile ? 32 : 48,
-                horizontal: isMobile ? 16 : 24,
-              ),
-              color: Colors.grey[100],
-              child: Column(
-                children: [
-                  Text(
-                    'Collections',
-                    style: TextStyle(
-                      fontSize: isMobile ? 28 : 36,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Browse our curated collections',
-                    style: TextStyle(
-                      fontSize: isMobile ? 14 : 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Collections grid
-            Padding(
-              padding:
-                  EdgeInsets.all(isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
-              child: GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
-                crossAxisSpacing: isMobile ? 16 : 24,
-                mainAxisSpacing: isMobile ? 24 : 32,
-                childAspectRatio: isMobile ? 1.2 : 1,
-                children: const [
-                  CollectionCard(
-                    title: 'Clothing',
-                    description: 'T-shirts, hoodies, and more',
-                    imageUrl:
-                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                    itemCount: 24,
-                  ),
-                  CollectionCard(
-                    title: 'Accessories',
-                    description: 'Bags, hats, and keychains',
-                    imageUrl:
-                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                    itemCount: 18,
-                  ),
-                  CollectionCard(
-                    title: 'Stationery',
-                    description: 'Notebooks, pens, and supplies',
-                    imageUrl:
-                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                    itemCount: 32,
-                  ),
-                  CollectionCard(
-                    title: 'Drinkware',
-                    description: 'Mugs, bottles, and tumblers',
-                    imageUrl:
-                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                    itemCount: 15,
-                  ),
-                ],
-              ),
-            ),
-
-            // Footer
+            _buildHeader(),
+            _buildFiltersAndSorting(),
+            _buildCollectionsGrid(),
             const UnionFooter(),
           ],
         ),
       ),
     );
   }
-}
 
-//Widget for displaying individual collection cards
-class CollectionCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final String imageUrl;
-  final int itemCount;
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      color: Colors.grey[100],
+      child: Column(
+        children: [
+          Text(
+            'Collections',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Browse our product collections',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ],
+      ),
+    );
+  }
 
-  const CollectionCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.imageUrl,
-    required this.itemCount,
-  });
+  Widget _buildFiltersAndSorting() {
+    final isMobile = MediaQuery.of(context).size.width < 600;
 
-  @override
-  Widget build(BuildContext context) {
+    if (isMobile) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            DropdownButtonFormField<String>(
+              value: _filterCategory,
+              decoration: const InputDecoration(
+                labelText: 'Category',
+                border: OutlineInputBorder(),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'all', child: Text('All')),
+                DropdownMenuItem(value: 'clothing', child: Text('Clothing')),
+                DropdownMenuItem(
+                    value: 'accessories', child: Text('Accessories')),
+                DropdownMenuItem(
+                    value: 'stationery', child: Text('Stationery')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _filterCategory = value!;
+                  _currentPage = 0;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _sortBy,
+                    decoration: const InputDecoration(
+                      labelText: 'Sort',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'name', child: Text('Name')),
+                      DropdownMenuItem(value: 'dateAdded', child: Text('Date')),
+                      DropdownMenuItem(
+                          value: 'productCount', child: Text('Count')),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _sortBy = value!;
+                      });
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(_sortAscending
+                      ? Icons.arrow_upward
+                      : Icons.arrow_downward),
+                  onPressed: () {
+                    setState(() {
+                      _sortAscending = !_sortAscending;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              value: _filterCategory,
+              decoration: const InputDecoration(
+                labelText: 'Filter by Category',
+                border: OutlineInputBorder(),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'all', child: Text('All Categories')),
+                DropdownMenuItem(value: 'clothing', child: Text('Clothing')),
+                DropdownMenuItem(
+                    value: 'accessories', child: Text('Accessories')),
+                DropdownMenuItem(
+                    value: 'stationery', child: Text('Stationery')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _filterCategory = value!;
+                  _currentPage = 0;
+                });
+              },
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: DropdownButtonFormField<String>(
+              value: _sortBy,
+              decoration: const InputDecoration(
+                labelText: 'Sort by',
+                border: OutlineInputBorder(),
+              ),
+              items: const [
+                DropdownMenuItem(value: 'name', child: Text('Name')),
+                DropdownMenuItem(value: 'dateAdded', child: Text('Date Added')),
+                DropdownMenuItem(
+                    value: 'productCount', child: Text('Product Count')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _sortBy = value!;
+                });
+              },
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+                _sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+            onPressed: () {
+              setState(() {
+                _sortAscending = !_sortAscending;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCollectionsGrid() {
+    return StreamBuilder<List<CollectionModel>>(
+      stream: _collectionsService.getCollectionsSorted(_sortBy, _sortAscending),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Error: ${snapshot.error}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => setState(() {}),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                children: [
+                  const Icon(Icons.inventory_2_outlined, size: 64),
+                  const SizedBox(height: 16),
+                  const Text('No collections found'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () async {
+                      await _collectionsService.addSampleCollections();
+                      setState(() {});
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4d2963),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Add Sample Collections'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        List<CollectionModel> collections = snapshot.data!;
+        if (_filterCategory != 'all') {
+          collections =
+              collections.where((c) => c.category == _filterCategory).toList();
+        }
+
+        final totalPages = (collections.length / _itemsPerPage).ceil();
+        final startIndex = _currentPage * _itemsPerPage;
+        final endIndex =
+            (startIndex + _itemsPerPage).clamp(0, collections.length);
+        final paginatedCollections = collections.sublist(startIndex, endIndex);
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _getCrossAxisCount(context),
+                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: paginatedCollections.length,
+                itemBuilder: (context, index) {
+                  return _buildCollectionCard(paginatedCollections[index]);
+                },
+              ),
+            ),
+            if (totalPages > 1) _buildPagination(totalPages),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildCollectionCard(CollectionModel collection) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
           context,
           '/collection-detail',
-          arguments: title,
+          arguments: collection.name,
         );
       },
       child: Card(
         elevation: 2,
-        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Collection image
             Expanded(
-              flex: 3,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[300],
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
-                        size: 48,
-                      ),
-                    ),
-                  );
-                },
+              child: ClipRRect(
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(8)),
+                child: Image.network(
+                  collection.imageUrl,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.image_not_supported, size: 64),
+                    );
+                  },
+                ),
               ),
             ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    collection.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black54,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    collection.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '$itemCount items',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${collection.productCount} products',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF4d2963),
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildPagination(int totalPages) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed:
+                _currentPage > 0 ? () => setState(() => _currentPage--) : null,
+          ),
+          ...List.generate(totalPages, (index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: ElevatedButton(
+                onPressed: () => setState(() => _currentPage = index),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _currentPage == index
+                      ? const Color(0xFF4d2963)
+                      : Colors.grey[300],
+                  foregroundColor:
+                      _currentPage == index ? Colors.white : Colors.black,
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(12),
+                ),
+                child: Text('${index + 1}'),
+              ),
+            );
+          }),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: _currentPage < totalPages - 1
+                ? () => setState(() => _currentPage++)
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _getCrossAxisCount(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 600) return 1;
+    if (width < 900) return 2;
+    return 3;
   }
 }
