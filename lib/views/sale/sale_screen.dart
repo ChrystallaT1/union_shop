@@ -3,7 +3,6 @@ import 'package:union_shop/views/common/union_footer.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 
-// Screen displaying sale products with discounted prices
 class SaleScreen extends StatefulWidget {
   const SaleScreen({super.key});
 
@@ -121,12 +120,26 @@ class _SaleScreenState extends State<SaleScreen> {
                 itemCount: _getSaleProducts().length,
                 itemBuilder: (context, index) {
                   final product = _getSaleProducts()[index];
-                  return SaleProductCard(
-                    title: product['title']!,
-                    originalPrice: product['originalPrice']!,
-                    salePrice: product['salePrice']!,
-                    discount: product['discount']!,
-                    imageUrl: product['imageUrl']!,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/product',
+                        arguments: {
+                          'id': 'sale-item-${index + 1}',
+                          'name': 'Sale Item ${index + 1}',
+                          'price': '£${(15 + index * 5).toStringAsFixed(2)}',
+                          'image': 'your-image-url',
+                        },
+                      );
+                    },
+                    child: SaleProductCard(
+                      title: product['title']!,
+                      originalPrice: product['originalPrice']!,
+                      salePrice: product['salePrice']!,
+                      discount: product['discount']!,
+                      imageUrl: product['imageUrl']!,
+                    ),
                   );
                 },
               ),

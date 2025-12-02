@@ -5,17 +5,26 @@ import 'package:union_shop/views/common/union_navbar.dart';
 
 // product page showing product information and purchase options
 class ProductPage extends StatefulWidget {
-  const ProductPage({super.key});
+  final String? productId;
+  final String? productName;
+  final String? productPrice;
+  final String? productImage;
+
+  const ProductPage({
+    super.key,
+    this.productId,
+    this.productName,
+    this.productPrice,
+    this.productImage,
+  });
 
   @override
   State<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
-  // State variables for user selections (UI only for now)
-  String _selectedSize = 'M';
-  String _selectedColor = 'Navy';
-  int _quantity = 1;
+  String selectedSize = 'M';
+  int quantity = 1;
   int _currentImageIndex = 0;
 
   // Dummy product images
@@ -37,7 +46,12 @@ class _ProductPageState extends State<ProductPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Product images, details, etc.
+            Padding(
+              padding: EdgeInsets.all(isMobile ? 16 : 32),
+              child: isMobile
+                  ? _buildMobileLayout()
+                  : _buildDesktopLayout(isTablet),
+            ),
             const UnionFooter(),
           ],
         ),
@@ -153,7 +167,7 @@ class _ProductPageState extends State<ProductPage> {
       children: [
         // Product title
         Text(
-          'UPSU Portsmouth Hoodie',
+          widget.productName ?? 'Product Name',
           style: TextStyle(
             fontSize: isMobile ? 24 : 32,
             fontWeight: FontWeight.bold,
@@ -163,7 +177,7 @@ class _ProductPageState extends State<ProductPage> {
         const SizedBox(height: 8),
         //  price
         Text(
-          '£29.99',
+          widget.productPrice ?? '£0.00',
           style: TextStyle(
             fontSize: isMobile ? 20 : 24,
             fontWeight: FontWeight.bold,
@@ -237,9 +251,10 @@ class _ProductPageState extends State<ProductPage> {
           child: ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Add to Cart functionality coming soon!'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(
+                    'Added $quantity x ${widget.productName} (Size: $selectedSize) to cart',
+                  ),
                 ),
               );
             },
@@ -271,7 +286,7 @@ class _ProductPageState extends State<ProductPage> {
   // Size selector dropdown
   Widget _buildSizeSelector() {
     return DropdownButtonFormField<String>(
-      value: _selectedSize,
+      value: selectedSize,
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
@@ -287,7 +302,7 @@ class _ProductPageState extends State<ProductPage> {
       }).toList(),
       onChanged: (value) {
         setState(() {
-          _selectedSize = value!;
+          selectedSize = value!;
         });
       },
     );
@@ -296,7 +311,7 @@ class _ProductPageState extends State<ProductPage> {
   // Color selector dropdown
   Widget _buildColorSelector() {
     return DropdownButtonFormField<String>(
-      value: _selectedColor,
+      value: 'Navy',
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),
@@ -312,7 +327,7 @@ class _ProductPageState extends State<ProductPage> {
       }).toList(),
       onChanged: (value) {
         setState(() {
-          _selectedColor = value!;
+          // Update color selection
         });
       },
     );
@@ -331,9 +346,9 @@ class _ProductPageState extends State<ProductPage> {
           IconButton(
             icon: const Icon(Icons.remove),
             onPressed: () {
-              if (_quantity > 1) {
+              if (quantity > 1) {
                 setState(() {
-                  _quantity--;
+                  quantity--;
                 });
               }
             },
@@ -341,7 +356,7 @@ class _ProductPageState extends State<ProductPage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              '$_quantity',
+              quantity.toString(),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -352,7 +367,7 @@ class _ProductPageState extends State<ProductPage> {
             icon: const Icon(Icons.add),
             onPressed: () {
               setState(() {
-                _quantity++;
+                quantity++;
               });
             },
           ),

@@ -169,13 +169,13 @@ A dedicated page displaying products on sale with discounted prices and promotio
 
 #### Acceptance Criteria
 
-- [ ] Sale page displays products with discounted prices
-- [ ] Each product shows both original and sale price
-- [ ] Page includes promotional messaging
-- [ ] Hardcoded data is acceptable
-- [ ] Page is accessible via navigation bar
-- [ ] Layout is consistent with other collection pages
-- [ ] Page is responsive on mobile devices
+- [✅] Sale page displays products with discounted prices
+- [✅] Each product shows both original and sale price
+- [✅] Page includes promotional messaging
+- [✅] Hardcoded data is acceptable
+- [✅] Page is accessible via navigation bar
+- [✅] Layout is consistent with other collection pages
+- [✅] Page is responsive on mobile devices
 
 ---
 
@@ -195,13 +195,13 @@ Login and signup pages with relevant form fields and widgets. The forms don't ne
 
 #### Acceptance Criteria
 
-- [ ] Login page includes email and password fields
-- [ ] Signup page includes name, email, and password fields
-- [ ] Forms include submit buttons
-- [ ] Forms have basic validation styling (UI only)
-- [ ] Widgets are present but don't need to function yet
-- [ ] Pages are accessible via navigation or Account button
-- [ ] Layout is responsive on mobile devices
+- [✅] Login page includes email and password fields
+- [✅] Signup page includes name, email, and password fields
+- [✅] Forms include submit buttons
+- [✅] Forms have basic validation styling (UI only)
+- [✅] Widgets are present but don't need to function yet
+- [✅] Pages are accessible via navigation or Account button
+- [✅] Layout is responsive on mobile devices
 
 ---
 
@@ -221,12 +221,12 @@ A top navigation bar for desktop view with links to main sections. The navbar sh
 
 #### Acceptance Criteria
 
-- [ ] Navbar displays "UPSU Union Shop" branding
-- [ ] Navbar includes links to Home, Collections, Sale, About Us, Account, and Cart
-- [ ] Navbar is visible on all pages
-- [ ] Links navigate to appropriate pages (or show "coming soon" messages)
-- [ ] On mobile, navbar should collapse to a menu button
-- [ ] Navbar styling is consistent with app theme
+- [✅] Navbar displays "UPSU Union Shop" branding
+- [✅] Navbar includes links to Home, Collections, Sale, About Us, Account, and Cart
+- [✅] Navbar is visible on all pages
+- [✅] Links navigate to appropriate pages (or show "coming soon" messages)
+- [✅] On mobile, navbar should collapse to a menu button
+- [✅] Navbar styling is consistent with app theme
 
 ---
 

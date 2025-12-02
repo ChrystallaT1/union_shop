@@ -112,13 +112,29 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                   mainAxisSpacing: isMobile ? 16 : 32,
                   childAspectRatio: isMobile ? 0.7 : 0.75,
                 ),
-                itemCount: _getDummyProducts().length,
+                itemCount: 8,
                 itemBuilder: (context, index) {
-                  final product = _getDummyProducts()[index];
-                  return ProductCard(
-                    title: product['title']!,
-                    price: product['price']!,
-                    imageUrl: product['imageUrl']!,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/product',
+                        arguments: {
+                          'id':
+                              '${widget.collectionName.toLowerCase()}-${index + 1}',
+                          'name': '${widget.collectionName} Item ${index + 1}',
+                          'price': index % 2 == 0 ? '£19.99' : '£24.99',
+                          'image':
+                              'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                        },
+                      );
+                    },
+                    child: ProductCard(
+                      title: '${widget.collectionName} Item ${index + 1}',
+                      price: index % 2 == 0 ? '£19.99' : '£24.99',
+                      imageUrl:
+                          'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                    ),
                   );
                 },
               ),

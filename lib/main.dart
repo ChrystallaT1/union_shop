@@ -23,10 +23,19 @@ class UnionShopApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4d2963)),
       ),
-      home: const HomeScreen(), // HomeScreen is wrapped by MaterialApp
+      home: const HomeScreen(),
       initialRoute: '/',
       routes: {
-        '/product': (context) => const ProductPage(),
+        '/product': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, String>?;
+          return ProductPage(
+            productId: args?['id'],
+            productName: args?['name'],
+            productPrice: args?['price'],
+            productImage: args?['image'],
+          );
+        },
         '/about': (context) => const AboutScreen(),
         '/collections': (context) => const CollectionsScreen(),
         '/collection-detail': (context) => CollectionDetailScreen(
