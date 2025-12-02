@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
 
 // screen displaying product collections
 class CollectionsScreen extends StatelessWidget {
@@ -13,168 +14,89 @@ class CollectionsScreen extends StatelessWidget {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Navbar
-          SliverToBoxAdapter(
-            child: Material(
-              color: Theme.of(context).primaryColor,
-              elevation: 4,
-              child: SafeArea(
-                bottom: false,
-                child: _buildNavbarContent(context),
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: isMobile ? 32 : 48,
+                horizontal: isMobile ? 16 : 24,
+              ),
+              color: Colors.grey[100],
+              child: Column(
+                children: [
+                  Text(
+                    'Collections',
+                    style: TextStyle(
+                      fontSize: isMobile ? 28 : 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Browse our curated collections',
+                    style: TextStyle(
+                      fontSize: isMobile ? 14 : 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
 
-          // content
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                //header
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    vertical: isMobile ? 32 : 48,
-                    horizontal: isMobile ? 16 : 24,
+            // Collections grid
+            Padding(
+              padding:
+                  EdgeInsets.all(isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
+                crossAxisSpacing: isMobile ? 16 : 24,
+                mainAxisSpacing: isMobile ? 24 : 32,
+                childAspectRatio: isMobile ? 1.2 : 1,
+                children: const [
+                  CollectionCard(
+                    title: 'Clothing',
+                    description: 'T-shirts, hoodies, and more',
+                    imageUrl:
+                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                    itemCount: 24,
                   ),
-                  color: Colors.grey[100],
-                  child: Column(
-                    children: [
-                      Text(
-                        'Collections',
-                        style: TextStyle(
-                          fontSize: isMobile ? 28 : 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Browse our curated collections',
-                        style: TextStyle(
-                          fontSize: isMobile ? 14 : 16,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
+                  CollectionCard(
+                    title: 'Accessories',
+                    description: 'Bags, hats, and keychains',
+                    imageUrl:
+                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                    itemCount: 18,
                   ),
-                ),
-
-                // Collections grid
-                Padding(
-                  padding: EdgeInsets.all(
-                      isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: isMobile ? 1 : (isTablet ? 2 : 4),
-                    crossAxisSpacing: isMobile ? 16 : 24,
-                    mainAxisSpacing: isMobile ? 24 : 32,
-                    childAspectRatio: isMobile ? 1.2 : 1,
-                    children: const [
-                      CollectionCard(
-                        title: 'Clothing',
-                        description: 'T-shirts, hoodies, and more',
-                        imageUrl:
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                        itemCount: 24,
-                      ),
-                      CollectionCard(
-                        title: 'Accessories',
-                        description: 'Bags, hats, and keychains',
-                        imageUrl:
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                        itemCount: 18,
-                      ),
-                      CollectionCard(
-                        title: 'Stationery',
-                        description: 'Notebooks, pens, and supplies',
-                        imageUrl:
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                        itemCount: 32,
-                      ),
-                      CollectionCard(
-                        title: 'Drinkware',
-                        description: 'Mugs, bottles, and tumblers',
-                        imageUrl:
-                            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                        itemCount: 15,
-                      ),
-                    ],
+                  CollectionCard(
+                    title: 'Stationery',
+                    description: 'Notebooks, pens, and supplies',
+                    imageUrl:
+                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                    itemCount: 32,
                   ),
-                ),
-
-                //Footer
-                const UnionFooter(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper method to build navbar content
-  Widget _buildNavbarContent(BuildContext context) {
-    return Container(
-      height: kToolbarHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'UPSU Union Shop',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
+                  CollectionCard(
+                    title: 'Drinkware',
+                    description: 'Mugs, bottles, and tumblers',
+                    imageUrl:
+                        'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                    itemCount: 15,
+                  ),
+                ],
               ),
             ),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text('Home', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/collections');
-            },
-            child: const Text('Collections',
-                style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/sale');
-            },
-            child: const Text('Sale', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/about');
-            },
-            child:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            child: const Text('Account', style: TextStyle(color: Colors.white)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cart coming soon!')),
-              );
-            },
-          ),
-        ],
+
+            // Footer
+            const UnionFooter(),
+          ],
+        ),
       ),
     );
   }

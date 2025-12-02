@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/views/common/union_navbar.dart';
 
 // product page showing product information and purchase options
 class ProductPage extends StatefulWidget {
@@ -30,37 +32,15 @@ class _ProductPageState extends State<ProductPage> {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Navbar
-          SliverToBoxAdapter(
-            child: Material(
-              color: Theme.of(context).primaryColor,
-              elevation: 4,
-              child: SafeArea(
-                bottom: false,
-                child: _buildNavbarContent(context),
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                // Main product section
-                Padding(
-                  padding: EdgeInsets.all(
-                      isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
-                  child: isMobile
-                      ? _buildMobileLayout()
-                      : _buildDesktopLayout(isTablet),
-                ),
-
-                // Footer
-                const UnionFooter(),
-              ],
-            ),
-          ),
-        ],
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Product images, details, etc.
+            const UnionFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -428,75 +408,6 @@ class _ProductPageState extends State<ProductPage> {
                 color: Colors.black87,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavbarContent(BuildContext context) {
-    return Container(
-      height: kToolbarHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'UPSU Union Shop',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text('Home', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/collections');
-            },
-            child: const Text('Collections',
-                style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/sale');
-            },
-            child: const Text('Sale', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/about');
-            },
-            child:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            child: const Text('Account', style: TextStyle(color: Colors.white)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cart coming soon!')),
-              );
-            },
           ),
         ],
       ),

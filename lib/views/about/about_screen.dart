@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -9,7 +10,9 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // Navigation bar at the top
-      appBar: const UnionNavbar(
+      appBar: const UnionNavbar(),
+      // Custom drawer
+      drawer: const MobileDrawer(
         highlightSale: true,
         highlightAccount: true,
       ),

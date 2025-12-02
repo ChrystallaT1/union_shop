@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/views/common/union_navbar.dart';
 
-// sale products with discounted prices
+// Screen displaying sale products with discounted prices
 class SaleScreen extends StatefulWidget {
   const SaleScreen({super.key});
 
@@ -20,129 +22,120 @@ class _SaleScreenState extends State<SaleScreen> {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Navbar
-          SliverToBoxAdapter(
-            child: Material(
-              color: Theme.of(context).primaryColor,
-              elevation: 4,
-              child: SafeArea(
-                bottom: false,
-                child: _buildNavbarContent(context),
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Promotional banner
+            _buildPromotionalBanner(isMobile),
+
+            // Sale header
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: isMobile ? 24 : 32,
+                horizontal: isMobile ? 16 : 24,
+              ),
+              color: Colors.white,
+              child: Column(
+                children: [
+                  Text(
+                    'SALE',
+                    style: TextStyle(
+                      fontSize: isMobile ? 28 : 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[700],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Save up to 50% on selected items',
+                    style: TextStyle(
+                      fontSize: isMobile ? 14 : 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${_getSaleProducts().length} products on sale',
+                    style: TextStyle(
+                      fontSize: isMobile ? 12 : 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
 
-          // Page content
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                _buildPromotionalBanner(isMobile),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    vertical: isMobile ? 24 : 32,
-                    horizontal: isMobile ? 16 : 24,
-                  ),
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      Text(
-                        'SALE',
-                        style: TextStyle(
-                          fontSize: isMobile ? 28 : 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red[700],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Save up to 50% on selected items',
-                        style: TextStyle(
-                          fontSize: isMobile ? 14 : 16,
-                          color: Colors.black54,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${_getSaleProducts().length} products on sale',
-                        style: TextStyle(
-                          fontSize: isMobile ? 12 : 14,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
+            // Filters and sorting bar
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 24,
+                vertical: 16,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey[300]!),
                 ),
-                // Filters and sorting bar
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 16 : 24,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!),
+              ),
+              child: isMobile
+                  ? Column(
+                      children: [
+                        _buildFilterDropdown(isMobile),
+                        const SizedBox(height: 12),
+                        _buildSortDropdown(isMobile),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        _buildFilterDropdown(isMobile),
+                        const SizedBox(width: 16),
+                        _buildSortDropdown(isMobile),
+                        const Spacer(),
+                        Text(
+                          '${_getSaleProducts().length} Results',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: isMobile
-                      ? Column(
-                          children: [
-                            _buildFilterDropdown(isMobile),
-                            const SizedBox(height: 12),
-                            _buildSortDropdown(isMobile),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            _buildFilterDropdown(isMobile),
-                            const SizedBox(width: 16),
-                            _buildSortDropdown(isMobile),
-                            const Spacer(),
-                            Text(
-                              '${_getSaleProducts().length} Results',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(
-                      isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: isMobile ? 2 : (isTablet ? 3 : 4),
-                      crossAxisSpacing: isMobile ? 12 : 24,
-                      mainAxisSpacing: isMobile ? 16 : 32,
-                      childAspectRatio: isMobile ? 0.65 : 0.7,
-                    ),
-                    itemCount: _getSaleProducts().length,
-                    itemBuilder: (context, index) {
-                      final product = _getSaleProducts()[index];
-                      return SaleProductCard(
-                        title: product['title']!,
-                        originalPrice: product['originalPrice']!,
-                        salePrice: product['salePrice']!,
-                        discount: product['discount']!,
-                        imageUrl: product['imageUrl']!,
-                      );
-                    },
-                  ),
-                ),
-
-                // Footer
-                const UnionFooter(),
-              ],
             ),
-          ),
-        ],
+
+            // Sale products grid
+            Padding(
+              padding:
+                  EdgeInsets.all(isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isMobile ? 2 : (isTablet ? 3 : 4),
+                  crossAxisSpacing: isMobile ? 12 : 24,
+                  mainAxisSpacing: isMobile ? 16 : 32,
+                  childAspectRatio: isMobile ? 0.65 : 0.7,
+                ),
+                itemCount: _getSaleProducts().length,
+                itemBuilder: (context, index) {
+                  final product = _getSaleProducts()[index];
+                  return SaleProductCard(
+                    title: product['title']!,
+                    originalPrice: product['originalPrice']!,
+                    salePrice: product['salePrice']!,
+                    discount: product['discount']!,
+                    imageUrl: product['imageUrl']!,
+                  );
+                },
+              ),
+            ),
+
+            // Footer
+            const UnionFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -188,6 +181,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
+  // Filter dropdown widget
   Widget _buildFilterDropdown(bool isMobile) {
     return SizedBox(
       width: isMobile ? double.infinity : 200,
@@ -216,6 +210,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
+  // Sort dropdown widget
   Widget _buildSortDropdown(bool isMobile) {
     return SizedBox(
       width: isMobile ? double.infinity : 200,
@@ -248,6 +243,7 @@ class _SaleScreenState extends State<SaleScreen> {
     );
   }
 
+  // Dummy sale product data
   List<Map<String, String>> _getSaleProducts() {
     return [
       {
@@ -332,73 +328,9 @@ class _SaleScreenState extends State<SaleScreen> {
       },
     ];
   }
-
-  // Navbar content
-  Widget _buildNavbarContent(BuildContext context) {
-    return Container(
-      height: kToolbarHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'UPSU Union Shop',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text('Home', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/collections');
-            },
-            child: const Text('Collections',
-                style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/sale');
-            },
-            child: const Text('Sale', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/about');
-            },
-            child:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            child: const Text('Account', style: TextStyle(color: Colors.white)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cart coming soon!')),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-// Widget sale product cards with original and discounted prices
+// Widget for displaying sale product cards with original and discounted prices
 class SaleProductCard extends StatelessWidget {
   final String title;
   final String originalPrice;

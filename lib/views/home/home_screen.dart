@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -25,7 +26,8 @@ class HomeScreen extends StatelessWidget {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      appBar: const UnionNavbar(
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(
         highlightSale: true,
         highlightAccount: true,
       ),

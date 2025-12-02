@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/views/common/union_navbar.dart';
 
-// Screen products, specific collection
+// Screen showing products within a specific collection
 class CollectionDetailScreen extends StatefulWidget {
   final String collectionName;
 
@@ -25,126 +27,112 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Navbar
-          SliverToBoxAdapter(
-            child: Material(
-              color: Theme.of(context).primaryColor,
-              elevation: 4,
-              child: SafeArea(
-                bottom: false,
-                child: _buildNavbarContent(context),
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Collection header
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: isMobile ? 32 : 48,
+                horizontal: isMobile ? 16 : 24,
+              ),
+              color: Colors.grey[100],
+              child: Column(
+                children: [
+                  Text(
+                    widget.collectionName,
+                    style: TextStyle(
+                      fontSize: isMobile ? 28 : 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${_getDummyProducts().length} products',
+                    style: TextStyle(
+                      fontSize: isMobile ? 14 : 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
 
-          //content
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                // header
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    vertical: isMobile ? 32 : 48,
-                    horizontal: isMobile ? 16 : 24,
-                  ),
-                  color: Colors.grey[100],
-                  child: Column(
-                    children: [
-                      Text(
-                        widget.collectionName,
-                        style: TextStyle(
-                          fontSize: isMobile ? 28 : 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${_getDummyProducts().length} products',
-                        style: TextStyle(
-                          fontSize: isMobile ? 14 : 16,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
+            // Filters and sorting bar
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 16 : 24,
+                vertical: 16,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey[300]!),
                 ),
-
-                // Filters and sorting bar
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 16 : 24,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey[300]!),
+              ),
+              child: isMobile
+                  ? Column(
+                      children: [
+                        _buildFilterDropdown(isMobile),
+                        const SizedBox(height: 12),
+                        _buildSortDropdown(isMobile),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        _buildFilterDropdown(isMobile),
+                        const SizedBox(width: 16),
+                        _buildSortDropdown(isMobile),
+                        const Spacer(),
+                        Text(
+                          '${_getDummyProducts().length} Results',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: isMobile
-                      ? Column(
-                          children: [
-                            _buildFilterDropdown(isMobile),
-                            const SizedBox(height: 12),
-                            _buildSortDropdown(isMobile),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            _buildFilterDropdown(isMobile),
-                            const SizedBox(width: 16),
-                            _buildSortDropdown(isMobile),
-                            const Spacer(),
-                            Text(
-                              '${_getDummyProducts().length} Results',
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                ),
-
-                // grid
-                Padding(
-                  padding: EdgeInsets.all(
-                      isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: isMobile ? 2 : (isTablet ? 3 : 4),
-                      crossAxisSpacing: isMobile ? 12 : 24,
-                      mainAxisSpacing: isMobile ? 16 : 32,
-                      childAspectRatio: isMobile ? 0.7 : 0.75,
-                    ),
-                    itemCount: _getDummyProducts().length,
-                    itemBuilder: (context, index) {
-                      final product = _getDummyProducts()[index];
-                      return ProductCard(
-                        title: product['title']!,
-                        price: product['price']!,
-                        imageUrl: product['imageUrl']!,
-                      );
-                    },
-                  ),
-                ),
-
-                // Footer
-                const UnionFooter(),
-              ],
             ),
-          ),
-        ],
+
+            // Products grid
+            Padding(
+              padding:
+                  EdgeInsets.all(isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isMobile ? 2 : (isTablet ? 3 : 4),
+                  crossAxisSpacing: isMobile ? 12 : 24,
+                  mainAxisSpacing: isMobile ? 16 : 32,
+                  childAspectRatio: isMobile ? 0.7 : 0.75,
+                ),
+                itemCount: _getDummyProducts().length,
+                itemBuilder: (context, index) {
+                  final product = _getDummyProducts()[index];
+                  return ProductCard(
+                    title: product['title']!,
+                    price: product['price']!,
+                    imageUrl: product['imageUrl']!,
+                  );
+                },
+              ),
+            ),
+
+            // Footer
+            const UnionFooter(),
+          ],
+        ),
       ),
     );
   }
 
+  // Filter dropdown widget
   Widget _buildFilterDropdown(bool isMobile) {
     return SizedBox(
       width: isMobile ? double.infinity : 200,
@@ -159,10 +147,10 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
               const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
         items: const [
-          DropdownMenuItem(value: 'All', child: Text('All Products')),
-          DropdownMenuItem(value: 'Price', child: Text('By Price')),
-          DropdownMenuItem(value: 'Size', child: Text('By Size')),
-          DropdownMenuItem(value: 'Color', child: Text('By Color')),
+          DropdownMenuItem(value: 'All', child: Text('All')),
+          DropdownMenuItem(value: 'New', child: Text('New Arrivals')),
+          DropdownMenuItem(value: 'Sale', child: Text('On Sale')),
+          DropdownMenuItem(value: 'Popular', child: Text('Most Popular')),
         ],
         onChanged: (value) {
           setState(() {
@@ -173,6 +161,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
+  // Sort dropdown widget
   Widget _buildSortDropdown(bool isMobile) {
     return SizedBox(
       width: isMobile ? double.infinity : 200,
@@ -192,7 +181,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
               value: 'Price: Low to High', child: Text('Price: Low to High')),
           DropdownMenuItem(
               value: 'Price: High to Low', child: Text('Price: High to Low')),
-          DropdownMenuItem(value: 'Name: A-Z', child: Text('Name: A-Z')),
+          DropdownMenuItem(value: 'Newest', child: Text('Newest')),
         ],
         onChanged: (value) {
           setState(() {
@@ -203,131 +192,62 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-  // Dummy product data
+  // Dummy product data for the collection
   List<Map<String, String>> _getDummyProducts() {
     return [
       {
-        'title': 'Portsmouth T-Shirt',
-        'price': '£15.99',
+        'title': '${widget.collectionName} Item 1',
+        'price': '£19.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
-        'title': 'UPSU Hoodie',
-        'price': '£29.99',
-        'imageUrl':
-            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-      },
-      {
-        'title': 'University Cap',
-        'price': '£12.50',
-        'imageUrl':
-            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-      },
-      {
-        'title': 'UPSU Backpack',
+        'title': '${widget.collectionName} Item 2',
         'price': '£24.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
       {
-        'title': 'Portsmouth Mug',
-        'price': '£8.99',
+        'title': '${widget.collectionName} Item 3',
+        'price': '£14.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
-        'title': 'University Notebook',
-        'price': '£5.99',
+        'title': '${widget.collectionName} Item 4',
+        'price': '£29.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
       {
-        'title': 'UPSU Water Bottle',
-        'price': '£9.99',
+        'title': '${widget.collectionName} Item 5',
+        'price': '£34.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
-        'title': 'Portsmouth Keychain',
-        'price': '£3.50',
+        'title': '${widget.collectionName} Item 6',
+        'price': '£17.99',
+        'imageUrl':
+            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+      },
+      {
+        'title': '${widget.collectionName} Item 7',
+        'price': '£22.99',
+        'imageUrl':
+            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+      },
+      {
+        'title': '${widget.collectionName} Item 8',
+        'price': '£39.99',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
     ];
   }
-
-  Widget _buildNavbarContent(BuildContext context) {
-    return Container(
-      height: kToolbarHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              'UPSU Union Shop',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const Spacer(),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/');
-            },
-            child: const Text('Home', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/collections');
-            },
-            child: const Text('Collections',
-                style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/sale');
-            },
-            child: const Text('Sale', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/about');
-            },
-            child:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/login');
-            },
-            child: const Text('Account', style: TextStyle(color: Colors.white)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Cart coming soon!')),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-// Widget individual product cards
+// Product card widget for collection detail page
 class ProductCard extends StatelessWidget {
   final String title;
   final String price;
@@ -389,13 +309,13 @@ class ProductCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     price,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF4d2963),
+                      color: Colors.black87,
                     ),
                   ),
                 ],
