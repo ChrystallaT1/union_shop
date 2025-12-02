@@ -4,6 +4,7 @@ import 'package:union_shop/views/home/home_screen.dart';
 import 'package:union_shop/views/about/about_screen.dart';
 import 'package:union_shop/views/collections/collections_screen.dart';
 import 'package:union_shop/views/collection/collection_detail_screen.dart';
+import 'package:union_shop/views/sale/sale_screen.dart';
 
 void main() {
   runApp(const UnionShopApp());
@@ -30,6 +31,7 @@ class UnionShopApp extends StatelessWidget {
               collectionName:
                   ModalRoute.of(context)!.settings.arguments as String,
             ),
+        '/sale': (context) => const SaleScreen(), // Add this line
       },
     );
   }

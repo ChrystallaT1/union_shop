@@ -149,9 +149,7 @@ class CollectionsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sale coming soon!')),
-              );
+              Navigator.pushNamed(context, '/sale');
             },
             child: const Text('Sale', style: TextStyle(color: Colors.white)),
           ),

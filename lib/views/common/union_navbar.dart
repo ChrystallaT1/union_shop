@@ -26,11 +26,9 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         // Button for Sale
         TextButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Sale page coming soon')),
-            );
+            Navigator.pushNamed(context, '/sale');
           },
-          child: const Text('Sale'),
+          child: const Text('Sale', style: TextStyle(color: Colors.white)),
         ),
         TextButton(
           //button for about us page

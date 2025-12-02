@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_footer.dart';
 
-// Screen products, specific collection
-class CollectionDetailScreen extends StatefulWidget {
-  final String collectionName;
-
-  const CollectionDetailScreen({
-    super.key,
-    required this.collectionName,
-  });
+// sale products with discounted prices
+class SaleScreen extends StatefulWidget {
+  const SaleScreen({super.key});
 
   @override
-  State<CollectionDetailScreen> createState() => _CollectionDetailScreenState();
+  State<SaleScreen> createState() => _SaleScreenState();
 }
 
-class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
+class _SaleScreenState extends State<SaleScreen> {
   String _selectedSort = 'Featured';
   String _selectedFilter = 'All';
 
@@ -39,40 +34,47 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
             ),
           ),
 
-          //content
+          // Page content
           SliverToBoxAdapter(
             child: Column(
               children: [
-                // header
+                _buildPromotionalBanner(isMobile),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(
-                    vertical: isMobile ? 32 : 48,
+                    vertical: isMobile ? 24 : 32,
                     horizontal: isMobile ? 16 : 24,
                   ),
-                  color: Colors.grey[100],
+                  color: Colors.white,
                   child: Column(
                     children: [
                       Text(
-                        widget.collectionName,
+                        'SALE',
                         style: TextStyle(
                           fontSize: isMobile ? 28 : 36,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Colors.red[700],
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        '${_getDummyProducts().length} products',
+                        'Save up to 50% on selected items',
                         style: TextStyle(
                           fontSize: isMobile ? 14 : 16,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_getSaleProducts().length} products on sale',
+                        style: TextStyle(
+                          fontSize: isMobile ? 12 : 14,
                           color: Colors.black54,
                         ),
                       ),
                     ],
                   ),
                 ),
-
                 // Filters and sorting bar
                 Container(
                   padding: EdgeInsets.symmetric(
@@ -100,7 +102,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                             _buildSortDropdown(isMobile),
                             const Spacer(),
                             Text(
-                              '${_getDummyProducts().length} Results',
+                              '${_getSaleProducts().length} Results',
                               style: const TextStyle(
                                 color: Colors.black54,
                                 fontSize: 14,
@@ -109,8 +111,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                           ],
                         ),
                 ),
-
-                // grid
                 Padding(
                   padding: EdgeInsets.all(
                       isMobile ? 16.0 : (isTablet ? 32.0 : 40.0)),
@@ -121,14 +121,16 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                       crossAxisCount: isMobile ? 2 : (isTablet ? 3 : 4),
                       crossAxisSpacing: isMobile ? 12 : 24,
                       mainAxisSpacing: isMobile ? 16 : 32,
-                      childAspectRatio: isMobile ? 0.7 : 0.75,
+                      childAspectRatio: isMobile ? 0.65 : 0.7,
                     ),
-                    itemCount: _getDummyProducts().length,
+                    itemCount: _getSaleProducts().length,
                     itemBuilder: (context, index) {
-                      final product = _getDummyProducts()[index];
-                      return ProductCard(
+                      final product = _getSaleProducts()[index];
+                      return SaleProductCard(
                         title: product['title']!,
-                        price: product['price']!,
+                        originalPrice: product['originalPrice']!,
+                        salePrice: product['salePrice']!,
+                        discount: product['discount']!,
                         imageUrl: product['imageUrl']!,
                       );
                     },
@@ -139,6 +141,47 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 const UnionFooter(),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Promotional banner at the top
+  Widget _buildPromotionalBanner(bool isMobile) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        vertical: isMobile ? 16 : 20,
+        horizontal: isMobile ? 16 : 24,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.red[700]!, Colors.red[500]!],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Text(
+            '🔥 WINTER SALE - UP TO 50% OFF 🔥',
+            style: TextStyle(
+              fontSize: isMobile ? 16 : 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Limited time offer - Shop now before it\'s gone!',
+            style: TextStyle(
+              fontSize: isMobile ? 12 : 14,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -160,9 +203,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         ),
         items: const [
           DropdownMenuItem(value: 'All', child: Text('All Products')),
+          DropdownMenuItem(value: 'Discount', child: Text('By Discount')),
           DropdownMenuItem(value: 'Price', child: Text('By Price')),
-          DropdownMenuItem(value: 'Size', child: Text('By Size')),
-          DropdownMenuItem(value: 'Color', child: Text('By Color')),
+          DropdownMenuItem(value: 'Category', child: Text('By Category')),
         ],
         onChanged: (value) {
           setState(() {
@@ -189,10 +232,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         items: const [
           DropdownMenuItem(value: 'Featured', child: Text('Featured')),
           DropdownMenuItem(
+              value: 'Discount: High to Low',
+              child: Text('Discount: High to Low')),
+          DropdownMenuItem(
               value: 'Price: Low to High', child: Text('Price: Low to High')),
           DropdownMenuItem(
               value: 'Price: High to Low', child: Text('Price: High to Low')),
-          DropdownMenuItem(value: 'Name: A-Z', child: Text('Name: A-Z')),
         ],
         onChanged: (value) {
           setState(() {
@@ -203,72 +248,98 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-  // Dummy product data
-  List<Map<String, String>> _getDummyProducts() {
+  List<Map<String, String>> _getSaleProducts() {
     return [
       {
         'title': 'Portsmouth T-Shirt',
-        'price': '£15.99',
+        'originalPrice': '£19.99',
+        'salePrice': '£14.99',
+        'discount': '25% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
         'title': 'UPSU Hoodie',
-        'price': '£29.99',
+        'originalPrice': '£39.99',
+        'salePrice': '£29.99',
+        'discount': '25% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
       {
         'title': 'University Cap',
-        'price': '£12.50',
+        'originalPrice': '£14.99',
+        'salePrice': '£9.99',
+        'discount': '33% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
         'title': 'UPSU Backpack',
-        'price': '£24.99',
+        'originalPrice': '£34.99',
+        'salePrice': '£24.99',
+        'discount': '29% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
       {
         'title': 'Portsmouth Mug',
-        'price': '£8.99',
+        'originalPrice': '£10.99',
+        'salePrice': '£5.99',
+        'discount': '45% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
         'title': 'University Notebook',
-        'price': '£5.99',
+        'originalPrice': '£7.99',
+        'salePrice': '£3.99',
+        'discount': '50% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
       {
         'title': 'UPSU Water Bottle',
-        'price': '£9.99',
+        'originalPrice': '£12.99',
+        'salePrice': '£8.99',
+        'discount': '31% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
       },
       {
         'title': 'Portsmouth Keychain',
-        'price': '£3.50',
+        'originalPrice': '£4.99',
+        'salePrice': '£2.99',
+        'discount': '40% OFF',
+        'imageUrl':
+            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+      },
+      {
+        'title': 'UPSU Scarf',
+        'originalPrice': '£16.99',
+        'salePrice': '£11.99',
+        'discount': '29% OFF',
+        'imageUrl':
+            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+      },
+      {
+        'title': 'Portsmouth Pen Set',
+        'originalPrice': '£8.99',
+        'salePrice': '£4.99',
+        'discount': '44% OFF',
         'imageUrl':
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
       },
     ];
   }
 
+  // Navbar content
   Widget _buildNavbarContent(BuildContext context) {
     return Container(
       height: kToolbarHeight,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: Text(
@@ -329,16 +400,20 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 }
 
-// Widget individual product cards
-class ProductCard extends StatelessWidget {
+// Widget sale product cards with original and discounted prices
+class SaleProductCard extends StatelessWidget {
   final String title;
-  final String price;
+  final String originalPrice;
+  final String salePrice;
+  final String discount;
   final String imageUrl;
 
-  const ProductCard({
+  const SaleProductCard({
     super.key,
     required this.title,
-    required this.price,
+    required this.originalPrice,
+    required this.salePrice,
+    required this.discount,
     required this.imageUrl,
   });
 
@@ -353,26 +428,53 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product image
+            // Product image with discount badge
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                ),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Icon(
-                        Icons.image_not_supported,
-                        color: Colors.grey,
-                        size: 48,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                    ),
+                    child: Image.network(
+                      imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                            size: 48,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Discount badge
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                    );
-                  },
-                ),
+                      decoration: BoxDecoration(
+                        color: Colors.red[700],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        discount,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             // Product details
@@ -391,13 +493,24 @@ class ProductCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
+                  // Original price (crossed out)
                   Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    originalPrice,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Sale price
+                  Text(
+                    salePrice,
+                    style: TextStyle(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF4d2963),
+                      color: Colors.red[700],
                     ),
                   ),
                 ],
