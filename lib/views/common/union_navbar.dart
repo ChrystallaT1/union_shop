@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 //custom navigation bar widget for the UPSU Union Shop app
 class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
-  const UnionNavbar({super.key});
+  final bool highlightSale;
+  final bool highlightAccount; // Add this parameter
+
+  const UnionNavbar({
+    super.key,
+    this.highlightSale = false,
+    this.highlightAccount = false, // Add default value
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +35,12 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/sale');
           },
-          child: const Text('Sale', style: TextStyle(color: Colors.white)),
+          child: Text(
+            'Sale',
+            style: TextStyle(
+              color: highlightSale ? const Color(0xFF4d2963) : Colors.white,
+            ),
+          ),
         ),
         TextButton(
           //button for about us page
@@ -37,14 +49,18 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
           },
           child: const Text('About Us'),
         ),
-        // Button for Account
         TextButton(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Account page coming soon')),
-            );
+            Navigator.pushNamed(context, '/login');
           },
-          child: const Text('Account'),
+          child: Text(
+            'Account',
+            style: TextStyle(
+              color: highlightAccount
+                  ? const Color(0xFF4d2963)
+                  : Colors.white, // conditional
+            ),
+          ),
         ),
         // Icon button for the Cart
         IconButton(

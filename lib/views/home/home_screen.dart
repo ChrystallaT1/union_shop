@@ -25,8 +25,10 @@ class HomeScreen extends StatelessWidget {
     final isTablet = screenWidth >= 600 && screenWidth < 1024;
 
     return Scaffold(
-      // AppBar scrolls with content (not pinned/floating)
-      appBar: const UnionNavbar(),
+      appBar: const UnionNavbar(
+        highlightSale: true,
+        highlightAccount: true,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -106,9 +108,9 @@ class HomeScreen extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/sale');
+                            Navigator.pushNamed(context, '/login');
                           },
-                          child: const Text('Sale',
+                          child: const Text('Account',
                               style: TextStyle(color: Colors.white)),
                         ),
                       ],

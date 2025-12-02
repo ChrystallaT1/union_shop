@@ -9,7 +9,10 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // Navigation bar at the top
-      appBar: const UnionNavbar(),
+      appBar: const UnionNavbar(
+        highlightSale: true,
+        highlightAccount: true,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),

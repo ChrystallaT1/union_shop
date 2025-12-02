@@ -162,9 +162,7 @@ class CollectionsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Account coming soon!')),
-              );
+              Navigator.pushNamed(context, '/login');
             },
             child: const Text('Account', style: TextStyle(color: Colors.white)),
           ),
