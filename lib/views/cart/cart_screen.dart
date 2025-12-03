@@ -15,12 +15,7 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final CartService _cartService = CartService();
 
-  // Tax
-  final double _taxRate = 0.20;
-
-  double get _subtotal => _cartService.totalPrice;
-  double get _tax => _subtotal * _taxRate;
-  double get _total => _subtotal + _tax;
+  double get _total => _cartService.totalPrice;
 
   void _updateQuantity(int index, int newQuantity) {
     setState(() {
@@ -570,9 +565,16 @@ class _CartScreenState extends State<CartScreen> {
                   ),
             ),
             const SizedBox(height: 16),
-            _buildSummaryRow('Subtotal', _subtotal),
-            const SizedBox(height: 8),
-            _buildSummaryRow('Tax (20% VAT)', _tax),
+            _buildSummaryRow('Subtotal', _total),
+            const SizedBox(height: 4),
+            Text(
+              '(includes VAT)',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
             const Divider(height: 24),
             _buildSummaryRow('Total', _total, isBold: true, isLarge: true),
           ],

@@ -19,14 +19,53 @@ class CollectionDetailScreen extends StatefulWidget {
 
 class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   final ProductsService _productsService = ProductsService();
-
-  String _sortBy = 'name';
-  bool _sortAscending = true;
+  String _sortBy = 'popularity';
+  bool _sortAscending = false;
   String _filterSize = 'all';
   String _filterColor = 'all';
   String _filterPriceRange = 'all';
   int _currentPage = 0;
   final int _itemsPerPage = 12;
+
+  List<ProductModel> get _filteredProducts {
+    var products = _productsService.getProductsByCollection(
+      widget.collectionName,
+      sortBy: _sortBy,
+    );
+
+    if (_filterSize != 'all') {
+      products = products.where((p) => p.sizes.contains(_filterSize)).toList();
+    }
+
+    if (_filterColor != 'all') {
+      products =
+          products.where((p) => p.colors.contains(_filterColor)).toList();
+    }
+
+    if (_filterPriceRange != 'all') {
+      products = products.where((p) {
+        final price = p.displayPrice;
+        switch (_filterPriceRange) {
+          case '0-15':
+            return price < 15;
+          case '15-30':
+            return price >= 15 && price < 30;
+          case '30-50':
+            return price >= 30 && price < 50;
+          case '50+':
+            return price >= 50;
+          default:
+            return true;
+        }
+      }).toList();
+    }
+
+    if (_sortAscending) {
+      products = products.reversed.toList();
+    }
+
+    return products;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,10 +177,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       items: const [
-        DropdownMenuItem(value: 'name', child: Text('Name')),
-        DropdownMenuItem(value: 'price', child: Text('Price')),
         DropdownMenuItem(value: 'popularity', child: Text('Popularity')),
-        DropdownMenuItem(value: 'dateAdded', child: Text('Newest')),
+        DropdownMenuItem(value: 'name', child: Text('Name')),
+        DropdownMenuItem(value: 'price_low', child: Text('Price: Low to High')),
+        DropdownMenuItem(
+            value: 'price_high', child: Text('Price: High to Low')),
+        DropdownMenuItem(value: 'newest', child: Text('Newest')),
       ],
       onChanged: (value) => setState(() => _sortBy = value!),
     );
@@ -179,10 +220,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
       ),
       items: const [
         DropdownMenuItem(value: 'all', child: Text('All Sizes')),
+        DropdownMenuItem(value: 'XS', child: Text('XS')),
         DropdownMenuItem(value: 'S', child: Text('Small')),
         DropdownMenuItem(value: 'M', child: Text('Medium')),
         DropdownMenuItem(value: 'L', child: Text('Large')),
         DropdownMenuItem(value: 'XL', child: Text('XL')),
+        DropdownMenuItem(value: 'XXL', child: Text('XXL')),
       ],
       onChanged: (value) => setState(() {
         _filterSize = value!;
@@ -205,6 +248,8 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
         DropdownMenuItem(value: 'Black', child: Text('Black')),
         DropdownMenuItem(value: 'White', child: Text('White')),
         DropdownMenuItem(value: 'Grey', child: Text('Grey')),
+        DropdownMenuItem(value: 'Purple', child: Text('Purple')),
+        DropdownMenuItem(value: 'Red', child: Text('Red')),
       ],
       onChanged: (value) => setState(() {
         _filterColor = value!;
@@ -214,148 +259,93 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Widget _buildProductsGrid() {
-    final collectionId =
-        widget.collectionName.toLowerCase().replaceAll(' ', '-');
+    final products = _filteredProducts;
 
-    return StreamBuilder<List<ProductModel>>(
-      stream: _productsService.getProductsByCollection(
-        collectionId,
-        sortBy: _sortBy,
-        ascending: _sortAscending,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading products',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text('${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => setState(() {}),
-                    child: const Text('Retry'),
-                  ),
-                ],
+    if (products.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(64.0),
+          child: Column(
+            children: [
+              Icon(Icons.shopping_bag_outlined,
+                  size: 100, color: Colors.grey[400]),
+              const SizedBox(height: 24),
+              Text(
+                'No products found',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.grey[700],
+                    ),
               ),
-            ),
-          );
-        }
-
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.shopping_bag_outlined,
-                      size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('No products found in this collection'),
-                ],
+              const SizedBox(height: 16),
+              Text(
+                'Try adjusting your filters',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                    ),
               ),
-            ),
-          );
-        }
-
-        List<ProductModel> products = snapshot.data!;
-
-        // Apply filters
-        if (_filterSize != 'all') {
-          products =
-              products.where((p) => p.sizes.contains(_filterSize)).toList();
-        }
-        if (_filterColor != 'all') {
-          products =
-              products.where((p) => p.colors.contains(_filterColor)).toList();
-        }
-        if (_filterPriceRange != 'all') {
-          products = products.where((p) {
-            final price = p.displayPrice;
-            switch (_filterPriceRange) {
-              case '0-15':
-                return price < 15;
-              case '15-30':
-                return price >= 15 && price < 30;
-              case '30-50':
-                return price >= 30 && price < 50;
-              case '50+':
-                return price >= 50;
-              default:
-                return true;
-            }
-          }).toList();
-        }
-
-        if (products.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: Text('No products match your filters'),
-            ),
-          );
-        }
-
-        // Pagination
-        final totalPages = (products.length / _itemsPerPage).ceil();
-        final startIndex = _currentPage * _itemsPerPage;
-        final endIndex = (startIndex + _itemsPerPage).clamp(0, products.length);
-        final paginatedProducts = products.sublist(startIndex, endIndex);
-
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Showing ${startIndex + 1}-$endIndex of ${products.length} products',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 0.7,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: paginatedProducts.length,
-                itemBuilder: (context, index) {
-                  return _buildProductCard(paginatedProducts[index]);
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _filterSize = 'all';
+                    _filterColor = 'all';
+                    _filterPriceRange = 'all';
+                    _currentPage = 0;
+                  });
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4d2963),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Clear Filters'),
               ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Pagination
+    final totalPages = (products.length / _itemsPerPage).ceil();
+    final startIndex = _currentPage * _itemsPerPage;
+    final endIndex = (startIndex + _itemsPerPage).clamp(0, products.length);
+    final paginatedProducts = products.sublist(startIndex, endIndex);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Showing ${startIndex + 1}-$endIndex of ${products.length} products',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: _getCrossAxisCount(context),
+              childAspectRatio: 0.7,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
             ),
-            if (totalPages > 1) _buildPagination(totalPages, products.length),
-          ],
-        );
-      },
+            itemCount: paginatedProducts.length,
+            itemBuilder: (context, index) {
+              return _buildProductCard(paginatedProducts[index]);
+            },
+          ),
+        ),
+        if (totalPages > 1) _buildPagination(totalPages),
+      ],
     );
   }
 
   Widget _buildProductCard(ProductModel product) {
     return GestureDetector(
       onTap: () {
+        print('🔍 Navigating to product: ${product.id} - ${product.name}');
         Navigator.pushNamed(
           context,
           '/product',
@@ -451,22 +441,6 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 14, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${(product.popularity / 50).toStringAsFixed(1)}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '(${product.popularity} reviews)',
-                        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
                   if (product.isOnSale)
                     Text(
                       '£${product.price.toStringAsFixed(2)}',
@@ -495,7 +469,7 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     );
   }
 
-  Widget _buildPagination(int totalPages, int totalItems) {
+  Widget _buildPagination(int totalPages) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(

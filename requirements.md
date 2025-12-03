@@ -327,14 +327,14 @@ A functional shopping cart where users can add items, view their cart, and use c
 
 #### Acceptance Criteria
 
-- [ ] Users can add items to cart from product pages
-- [ ] Cart page displays all added items with images, names, and prices
-- [ ] Users can edit quantities in the cart
-- [ ] Users can remove items from the cart
-- [ ] Cart displays subtotal, tax (if applicable), and total
-- [ ] Cart data persists during the session
-- [ ] Checkout button is present (doesn't need to process payment yet)
-- [ ] Empty cart state is handled gracefully
+- [✅] Users can add items to cart from product pages
+- [✅] Cart page displays all added items with images, names, and prices
+- [✅] Users can edit quantities in the cart
+- [✅] Users can remove items from the cart
+- [✅] Cart displays subtotal, tax (if applicable), and total
+- [✅] Cart data persists during the session
+- [✅] Checkout button is present (doesn't need to process payment yet)
+- [✅] Empty cart state is handled gracefully
 
 ---
 

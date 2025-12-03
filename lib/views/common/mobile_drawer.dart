@@ -116,6 +116,14 @@ class MobileDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/login');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Print Shack'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/print-shack');
+            },
+          ),
         ],
       ),
     );

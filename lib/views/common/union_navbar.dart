@@ -56,6 +56,10 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         child: const Text('Collections', style: TextStyle(color: Colors.white)),
       ),
       TextButton(
+        onPressed: () => Navigator.pushNamed(context, '/print-shack'),
+        child: const Text('Print Shack', style: TextStyle(color: Colors.white)),
+      ),
+      TextButton(
         onPressed: () => Navigator.pushNamed(context, '/sale'),
         child: Text(
           'Sale',

@@ -1,47 +1,72 @@
 import 'package:union_shop/models/product_model.dart';
 
 class ProductsService {
-  Stream<List<ProductModel>> getProductsByCollection(
-    String collectionId, {
-    String sortBy = 'name',
-    bool ascending = true,
-  }) async* {
-    List<ProductModel> products = _getFakeProducts(collectionId);
+  // Get products by collection name with sorting
+  List<ProductModel> getProductsByCollection(
+    String collectionName, {
+    String sortBy = 'popularity', // Add this parameter
+  }) {
+    var products = _getAllFakeProducts()
+        .where((product) => product.collectionId == collectionName)
+        .toList();
 
-    if (sortBy == 'name') {
-      products.sort((a, b) =>
-          ascending ? a.name.compareTo(b.name) : b.name.compareTo(a.name));
-    } else if (sortBy == 'price') {
-      products.sort((a, b) => ascending
-          ? a.displayPrice.compareTo(b.displayPrice)
-          : b.displayPrice.compareTo(a.displayPrice));
-    } else if (sortBy == 'popularity') {
-      products.sort((a, b) => ascending
-          ? a.popularity.compareTo(b.popularity)
-          : b.popularity.compareTo(a.popularity));
-    } else if (sortBy == 'dateAdded') {
-      products.sort((a, b) => ascending
-          ? a.dateAdded.compareTo(b.dateAdded)
-          : b.dateAdded.compareTo(a.dateAdded));
+    // Sort products based on sortBy parameter
+    switch (sortBy) {
+      case 'price_low':
+        products.sort((a, b) => a.displayPrice.compareTo(b.displayPrice));
+        break;
+      case 'price_high':
+        products.sort((a, b) => b.displayPrice.compareTo(a.displayPrice));
+        break;
+      case 'name':
+        products.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 'newest':
+        products.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+        break;
+      case 'popularity':
+      default:
+        products.sort((a, b) => b.popularity.compareTo(a.popularity));
+        break;
     }
 
-    yield products;
+    return products;
   }
 
-  ProductModel? getProductById(String productId) {
-    final allProducts = _getAllFakeProducts();
+  // Get product by ID
+  ProductModel? getProductById(String id) {
     try {
-      return allProducts.firstWhere((p) => p.id == productId);
+      return _getAllFakeProducts().firstWhere((p) => p.id == id);
     } catch (e) {
+      print('❌ Product not found with ID: $id');
       return null;
     }
   }
 
-  List<ProductModel> _getFakeProducts(String collectionId) {
-    return _getAllFakeProducts()
-        .where(
-            (p) => p.collectionId.toLowerCase() == collectionId.toLowerCase())
-        .toList();
+  List<ProductModel> getAllProducts({String sortBy = 'popularity'}) {
+    var products = _getAllFakeProducts();
+
+    // Sort products
+    switch (sortBy) {
+      case 'price_low':
+        products.sort((a, b) => a.displayPrice.compareTo(b.displayPrice));
+        break;
+      case 'price_high':
+        products.sort((a, b) => b.displayPrice.compareTo(a.displayPrice));
+        break;
+      case 'name':
+        products.sort((a, b) => a.name.compareTo(b.name));
+        break;
+      case 'newest':
+        products.sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+        break;
+      case 'popularity':
+      default:
+        products.sort((a, b) => b.popularity.compareTo(a.popularity));
+        break;
+    }
+
+    return products;
   }
 
   List<ProductModel> _getAllFakeProducts() {
@@ -227,9 +252,5 @@ class ProductsService {
         popularity: 90,
       ),
     ];
-  }
-
-  List<ProductModel> getAllProducts() {
-    return _getAllFakeProducts();
   }
 }

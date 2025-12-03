@@ -1,3 +1,5 @@
+import 'package:union_shop/models/personalization_model.dart';
+
 class CartItemModel {
   final String productId;
   final String productName;
@@ -6,6 +8,7 @@ class CartItemModel {
   final String selectedSize;
   final String selectedColor;
   int quantity;
+  final PersonalizationModel? personalization;
 
   CartItemModel({
     required this.productId,
@@ -15,9 +18,11 @@ class CartItemModel {
     required this.selectedSize,
     required this.selectedColor,
     this.quantity = 1,
+    this.personalization,
   });
 
-  double get totalPrice => price * quantity;
+  double get totalPrice =>
+      (price + (personalization?.additionalCost ?? 0.0)) * quantity;
 
   Map<String, dynamic> toJson() {
     return {
@@ -28,6 +33,7 @@ class CartItemModel {
       'selectedSize': selectedSize,
       'selectedColor': selectedColor,
       'quantity': quantity,
+      'personalization': personalization?.toJson(),
     };
   }
 
@@ -40,6 +46,9 @@ class CartItemModel {
       selectedSize: json['selectedSize'],
       selectedColor: json['selectedColor'],
       quantity: json['quantity'],
+      personalization: json['personalization'] != null
+          ? PersonalizationModel.fromJson(json['personalization'])
+          : null,
     );
   }
 
@@ -51,6 +60,7 @@ class CartItemModel {
     String? selectedSize,
     String? selectedColor,
     int? quantity,
+    PersonalizationModel? personalization,
   }) {
     return CartItemModel(
       productId: productId ?? this.productId,
@@ -60,6 +70,7 @@ class CartItemModel {
       selectedSize: selectedSize ?? this.selectedSize,
       selectedColor: selectedColor ?? this.selectedColor,
       quantity: quantity ?? this.quantity,
+      personalization: personalization ?? this.personalization,
     );
   }
 }
