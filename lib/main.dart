@@ -9,6 +9,7 @@ import 'package:union_shop/views/collection/collection_detail_screen.dart';
 import 'package:union_shop/views/sale/sale_screen.dart';
 import 'package:union_shop/views/auth/login_screen.dart';
 import 'package:union_shop/views/auth/signup_screen.dart';
+import 'package:union_shop/views/cart/cart_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,7 @@ class UnionShopApp extends StatelessWidget {
         '/sale': (context) => const SaleScreen(),
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignupScreen(),
+        '/cart': (context) => const CartScreen(),
       },
     );
   }

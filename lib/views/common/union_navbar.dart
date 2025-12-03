@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Responsive: Full navbar on desktop, collapsible menu on mobile
 class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
   final bool highlightSale;
   final bool highlightAccount;
@@ -13,14 +12,12 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen width for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
 
     return AppBar(
       backgroundColor: const Color(0xFF4d2963),
       elevation: 4,
-      // ONLY on mobile
       leading: isMobile
           ? Builder(
               builder: (context) => IconButton(
@@ -83,27 +80,20 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       IconButton(
-        icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cart coming soon!')),
-          );
-        },
+        icon: const Icon(Icons.shopping_cart, color: Colors.white),
+        onPressed: () => Navigator.pushNamed(context, '/cart'),
         tooltip: 'Shopping Cart',
       ),
     ];
   }
 
-  // Mobile: Only cart icon (menu is in leading/hamburger)
   List<Widget> _buildMobileActions(BuildContext context) {
     return [
       IconButton(
-        icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cart coming soon!')),
-          );
-        },
+        icon: const Icon(Icons.shopping_cart,
+            color: Colors.white), // CHANGED from shopping_bag_outlined
+        onPressed: () => Navigator.pushNamed(
+            context, '/cart'), // CHANGED to actually navigate
         tooltip: 'Shopping Cart',
       ),
     ];

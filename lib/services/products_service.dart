@@ -228,4 +228,8 @@ class ProductsService {
       ),
     ];
   }
+
+  List<ProductModel> getAllProducts() {
+    return _getAllFakeProducts();
+  }
 }
