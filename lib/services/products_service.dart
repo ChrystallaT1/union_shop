@@ -75,7 +75,7 @@ class ProductsService {
       ProductModel(
         id: 'hoodie-1',
         name: 'Classic UPSU Hoodie',
-        description: 'Comfortable cotton hoodie with university branding',
+        description: 'Comfortable navy hoodie with UPSU branding',
         price: 39.99,
         imageUrl:
             'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
@@ -84,10 +84,8 @@ class ProductsService {
         sizes: ['S', 'M', 'L', 'XL', 'XXL'],
         colors: ['Navy', 'Black', 'Grey'],
         stockQuantity: 50,
-        dateAdded: DateTime.now().subtract(const Duration(days: 30)),
-        isOnSale: true,
-        salePrice: 29.99,
-        popularity: 150,
+        dateAdded: DateTime(2024, 1, 15),
+        popularity: 95,
       ),
       ProductModel(
         id: 'hoodie-2',
@@ -123,20 +121,18 @@ class ProductsService {
       // T-Shirts Collection
       ProductModel(
         id: 'tshirt-1',
-        name: 'Portsmouth University T-Shirt',
-        description: 'Classic cotton t-shirt with university crest',
-        price: 19.99,
+        name: 'University T-Shirt',
+        description: 'Classic white t-shirt with Portsmouth University logo',
+        price: 15.99,
         imageUrl:
-            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+            'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
         collectionId: 't-shirts',
         category: 'clothing',
-        sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-        colors: ['White', 'Navy', 'Black'],
+        sizes: ['XS', 'S', 'M', 'L', 'XL'],
+        colors: ['White', 'Navy', 'Black', 'Purple'],
         stockQuantity: 100,
-        dateAdded: DateTime.now().subtract(const Duration(days: 35)),
-        isOnSale: true,
-        salePrice: 14.99,
-        popularity: 200,
+        dateAdded: DateTime(2024, 1, 20),
+        popularity: 88,
       ),
       ProductModel(
         id: 'tshirt-2',

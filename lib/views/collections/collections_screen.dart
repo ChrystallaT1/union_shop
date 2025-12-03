@@ -194,167 +194,101 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
   }
 
   Widget _buildCollectionsGrid() {
-    return StreamBuilder<List<CollectionModel>>(
-      stream: _collectionsService.getCollectionsSorted(_sortBy, _sortAscending),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text('Error: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => setState(() {}),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Column(
-                children: [
-                  const Icon(Icons.inventory_2_outlined, size: 64),
-                  const SizedBox(height: 16),
-                  const Text('No collections found'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await _collectionsService.addSampleCollections();
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4d2963),
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Add Sample Collections'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
-        List<CollectionModel> collections = snapshot.data!;
-        if (_filterCategory != 'all') {
-          collections =
-              collections.where((c) => c.category == _filterCategory).toList();
-        }
-
-        final totalPages = (collections.length / _itemsPerPage).ceil();
-        final startIndex = _currentPage * _itemsPerPage;
-        final endIndex =
-            (startIndex + _itemsPerPage).clamp(0, collections.length);
-        final paginatedCollections = collections.sublist(startIndex, endIndex);
-
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _getCrossAxisCount(context),
-                  childAspectRatio: 0.8,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: paginatedCollections.length,
-                itemBuilder: (context, index) {
-                  return _buildCollectionCard(paginatedCollections[index]);
-                },
-              ),
-            ),
-            if (totalPages > 1) _buildPagination(totalPages),
-          ],
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.count(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        crossAxisCount: _getCrossAxisCount(context),
+        childAspectRatio: 0.8,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        children: [
+          _buildCollectionCard(
+            title: 'Hoodies',
+            subtitle: 'Comfortable hoodies for all occasions',
+            imageUrl:
+                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+            collectionId: 'hoodies',
+          ),
+          _buildCollectionCard(
+            title: 'T-Shirts',
+            subtitle: 'Classic t-shirts with university branding',
+            imageUrl:
+                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+            collectionId: 't-shirts',
+          ),
+          _buildCollectionCard(
+            title: 'Accessories',
+            subtitle: 'Bags, caps, and more',
+            imageUrl:
+                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+            collectionId: 'accessories',
+          ),
+          _buildCollectionCard(
+            title: 'Stationery',
+            subtitle: 'Notebooks, pens, and study supplies',
+            imageUrl:
+                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+            collectionId: 'stationery',
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCollectionCard(CollectionModel collection) {
+  Widget _buildCollectionCard({
+    required String title,
+    required String subtitle,
+    required String imageUrl,
+    required String collectionId,
+  }) {
     return GestureDetector(
       onTap: () {
+        print('🔍 Navigating to collection: $collectionId');
         Navigator.pushNamed(
           context,
           '/collection-detail',
-          arguments: collection.name,
+          arguments: collectionId,
         );
       },
       child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        elevation: 4,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(8)),
-                child: Image.network(
-                  collection.imageUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.image_not_supported, size: 64),
-                    );
-                  },
-                ),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image_not_supported, size: 64),
+                  );
+                },
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    collection.name,
+                    title,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
-                    collection.description,
+                    subtitle,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${collection.productCount} products',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF4d2963),
-                      fontWeight: FontWeight.bold,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
