@@ -248,13 +248,13 @@ An enhanced collections page that loads data from Firebase or a data model, with
 
 #### Acceptance Criteria
 
-- [ ] Collections are loaded from Firebase or data models
-- [ ] Sorting functionality works (e.g., by name, date added)
-- [ ] Filtering functionality works (e.g., by category type)
-- [ ] Pagination widgets are functional
-- [ ] Page updates dynamically when filters/sorting change
-- [ ] Loading states are displayed while fetching data
-- [ ] Error handling is implemented for failed data fetches
+- [✅] Collections are loaded from Firebase or data models
+- [✅] Sorting functionality works (e.g., by name, date added)
+- [✅] Filtering functionality works (e.g., by category type)
+- [✅] Pagination widgets are functional
+- [✅] Page updates dynamically when filters/sorting change
+- [✅] Loading states are displayed while fetching data
+- [✅] Error handling is implemented for failed data fetches
 
 ---
 
@@ -274,13 +274,13 @@ An enhanced collection page that loads products from a database with functional 
 
 #### Acceptance Criteria
 
-- [ ] Products are loaded from Firebase or data models
-- [ ] Sorting functionality works (e.g., by price, name, popularity)
-- [ ] Filtering functionality works (e.g., by price range, size, color)
-- [ ] Pagination works correctly
-- [ ] Page updates dynamically based on user selections
-- [ ] Loading states are displayed
-- [ ] Error handling is implemented
+- [✅] Products are loaded from Firebase or data models
+- [✅] Sorting functionality works (e.g., by price, name, popularity)
+- [✅] Filtering functionality works (e.g., by price range, size, color)
+- [✅] Pagination works correctly
+- [✅] Page updates dynamically based on user selections
+- [✅] Loading states are displayed
+- [✅] Error handling is implemented
 
 ---
 
