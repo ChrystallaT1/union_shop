@@ -3,6 +3,7 @@ import 'package:union_shop/models/product_model.dart';
 import 'package:union_shop/models/cart_item_model.dart';
 import 'package:union_shop/services/products_service.dart';
 import 'package:union_shop/services/cart_service.dart';
+import 'package:union_shop/utils/screen_size_helper.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_footer.dart';
@@ -225,6 +226,7 @@ class _ProductPageState extends State<ProductPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Breadcrumb navigation
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -257,7 +259,7 @@ class _ProductPageState extends State<ProductPage> {
                 ],
               ),
             ),
-            // Your existing product page content...
+            // Main content ✅ This is the correct method to call
             _buildProductView(),
           ],
         ),

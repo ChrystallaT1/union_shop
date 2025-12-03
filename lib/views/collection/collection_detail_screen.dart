@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/models/product_model.dart';
 import 'package:union_shop/services/products_service.dart';
+import 'package:union_shop/utils/screen_size_helper.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_footer.dart';
@@ -127,61 +128,38 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Widget _buildFiltersAndSorting() {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-
-    if (isMobile) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(child: _buildSortDropdown()),
-                IconButton(
-                  icon: Icon(_sortAscending
-                      ? Icons.arrow_upward
-                      : Icons.arrow_downward),
-                  onPressed: () =>
-                      setState(() => _sortAscending = !_sortAscending),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildPriceRangeFilter(),
-            const SizedBox(height: 12),
-            _buildSizeFilter(),
-            const SizedBox(height: 12),
-            _buildColorFilter(),
-          ],
-        ),
-      );
-    }
+    final isMobile = ScreenSize.isMobile(context);
 
     return Container(
-      padding: const EdgeInsets.all(16),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 12,
-        children: [
-          SizedBox(
-            width: 200,
-            child: Row(
-              children: [
-                Expanded(child: _buildSortDropdown()),
-                IconButton(
-                  icon: Icon(_sortAscending
-                      ? Icons.arrow_upward
-                      : Icons.arrow_downward),
-                  onPressed: () =>
-                      setState(() => _sortAscending = !_sortAscending),
-                ),
-              ],
-            ),
+      padding: ScreenSize.getPagePadding(context),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: ScreenSize.getMaxContentWidth(context),
           ),
-          SizedBox(width: 200, child: _buildPriceRangeFilter()),
-          SizedBox(width: 150, child: _buildSizeFilter()),
-          SizedBox(width: 150, child: _buildColorFilter()),
-        ],
+          child: isMobile
+              ? Column(
+                  children: [
+                    _buildSortDropdown(),
+                    const SizedBox(height: 12),
+                    _buildPriceRangeFilter(),
+                    const SizedBox(height: 12),
+                    _buildSizeFilter(),
+                    const SizedBox(height: 12),
+                    _buildColorFilter(),
+                  ],
+                )
+              : Wrap(
+                  spacing: 16,
+                  runSpacing: 12,
+                  children: [
+                    SizedBox(width: 200, child: _buildSortDropdown()),
+                    SizedBox(width: 200, child: _buildPriceRangeFilter()),
+                    SizedBox(width: 150, child: _buildSizeFilter()),
+                    SizedBox(width: 150, child: _buildColorFilter()),
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -280,50 +258,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     final products = _filteredProducts;
 
     if (products.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(64.0),
-          child: Column(
-            children: [
-              Icon(Icons.shopping_bag_outlined,
-                  size: 100, color: Colors.grey[400]),
-              const SizedBox(height: 24),
-              Text(
-                'No products found',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.grey[700],
-                    ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Try adjusting your filters',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _filterSize = 'all';
-                    _filterColor = 'all';
-                    _filterPriceRange = 'all';
-                    _currentPage = 0;
-                  });
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4d2963),
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Clear Filters'),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _buildEmptyState();
     }
 
-    // Pagination
     final totalPages = (products.length / _itemsPerPage).ceil();
     final startIndex = _currentPage * _itemsPerPage;
     final endIndex = (startIndex + _itemsPerPage).clamp(0, products.length);
@@ -332,27 +269,36 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Showing ${startIndex + 1}-$endIndex of ${products.length} products',
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: _getCrossAxisCount(context),
-              childAspectRatio: 0.7,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+          padding: ScreenSize.getPagePadding(context),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: ScreenSize.getMaxContentWidth(context),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    'Showing ${startIndex + 1}-$endIndex of ${products.length} products',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 16),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: ScreenSize.getGridColumns(context),
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    itemCount: paginatedProducts.length,
+                    itemBuilder: (context, index) {
+                      return _buildProductCard(paginatedProducts[index]);
+                    },
+                  ),
+                ],
+              ),
             ),
-            itemCount: paginatedProducts.length,
-            itemBuilder: (context, index) {
-              return _buildProductCard(paginatedProducts[index]);
-            },
           ),
         ),
         if (totalPages > 1) _buildPagination(totalPages),
@@ -554,6 +500,71 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                 : null,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: ScreenSize.getPagePadding(context),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: ScreenSize.getMaxContentWidth(context),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 48),
+              Icon(
+                Icons.search_off,
+                size: 80,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No Products Found',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Try adjusting your filters or check back later',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _sortBy = 'popularity';
+                    _filterSize = 'all';
+                    _filterColor = 'all';
+                    _filterPriceRange = 'all';
+                    _currentPage = 0;
+                  });
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Clear Filters'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4d2963),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 48),
+            ],
+          ),
+        ),
       ),
     );
   }

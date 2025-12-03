@@ -404,14 +404,14 @@ The app layout should be adaptive and responsive, functioning well on desktop an
 
 #### Acceptance Criteria
 
-- [ ] All pages render correctly on mobile screen sizes (360px - 480px width)
-- [ ] All pages render correctly on tablet screen sizes (768px - 1024px width)
-- [ ] All pages render correctly on desktop screen sizes (1200px+ width)
-- [ ] Images scale appropriately across devices
-- [ ] Text remains readable on all screen sizes
-- [ ] Navigation adapts to mobile (hamburger menu) and desktop (full navbar)
-- [ ] Buttons and interactive elements are appropriately sized for touch on mobile
-- [ ] No horizontal scrolling occurs on any device size
+- [✅] All pages render correctly on mobile screen sizes (360px - 480px width)
+- [✅] All pages render correctly on tablet screen sizes (768px - 1024px width)
+- [✅] All pages render correctly on desktop screen sizes (1200px+ width)
+- [✅] Images scale appropriately across devices
+- [✅] Text remains readable on all screen sizes
+- [✅] Navigation adapts to mobile (hamburger menu) and desktop (full navbar)
+- [✅] Buttons and interactive elements are appropriately sized for touch on mobile
+- [✅] No horizontal scrolling occurs on any device size
 
 ---
 

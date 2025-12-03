@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/models/collection_model.dart';
 import 'package:union_shop/services/collections_service.dart';
+import 'package:union_shop/utils/screen_size_helper.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_footer.dart';
@@ -195,44 +196,51 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
 
   Widget _buildCollectionsGrid() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: _getCrossAxisCount(context),
-        childAspectRatio: 0.8,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        children: [
-          _buildCollectionCard(
-            title: 'Hoodies',
-            subtitle: 'Comfortable hoodies for all occasions',
-            imageUrl:
-                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-            collectionId: 'hoodies',
+      padding: ScreenSize.getPagePadding(context),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: ScreenSize.getMaxContentWidth(context),
           ),
-          _buildCollectionCard(
-            title: 'T-Shirts',
-            subtitle: 'Classic t-shirts with university branding',
-            imageUrl:
-                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-            collectionId: 't-shirts',
+          child: GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: ScreenSize.getGridColumns(context).clamp(2, 4),
+            childAspectRatio: 0.8,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              _buildCollectionCard(
+                title: 'Hoodies',
+                subtitle: 'Comfortable hoodies for all occasions',
+                imageUrl:
+                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                collectionId: 'hoodies',
+              ),
+              _buildCollectionCard(
+                title: 'T-Shirts',
+                subtitle: 'Classic t-shirts with university branding',
+                imageUrl:
+                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                collectionId: 't-shirts',
+              ),
+              _buildCollectionCard(
+                title: 'Accessories',
+                subtitle: 'Bags, caps, and more',
+                imageUrl:
+                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
+                collectionId: 'accessories',
+              ),
+              _buildCollectionCard(
+                title: 'Stationery',
+                subtitle: 'Notebooks, pens, and study supplies',
+                imageUrl:
+                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
+                collectionId: 'stationery',
+              ),
+            ],
           ),
-          _buildCollectionCard(
-            title: 'Accessories',
-            subtitle: 'Bags, caps, and more',
-            imageUrl:
-                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-            collectionId: 'accessories',
-          ),
-          _buildCollectionCard(
-            title: 'Stationery',
-            subtitle: 'Notebooks, pens, and study supplies',
-            imageUrl:
-                'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-            collectionId: 'stationery',
-          ),
-        ],
+        ),
       ),
     );
   }
