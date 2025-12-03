@@ -300,13 +300,13 @@ Enhanced product pages with working dropdowns for options, counters for quantity
 
 #### Acceptance Criteria
 
-- [ ] Products are loaded from Firebase or data models
-- [ ] Dropdown menus work for selecting options (size, color, etc.)
-- [ ] Quantity counter buttons work correctly
-- [ ] "Add to Cart" button adds items to cart with selected options
-- [ ] Confirmation message is shown when item is added
-- [ ] Product data persists in cart
-- [ ] Error handling for out-of-stock or invalid selections
+- [✅] Products are loaded from Firebase or data models
+- [✅] Dropdown menus work for selecting options (size, color, etc.)
+- [✅] Quantity counter buttons work correctly
+- [✅] "Add to Cart" button adds items to cart with selected options
+- [✅] Confirmation message is shown when item is added
+- [✅] Product data persists in cart
+- [✅] Error handling for out-of-stock or invalid selections
 
 ---
 
