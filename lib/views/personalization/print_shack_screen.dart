@@ -81,11 +81,11 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
       case 'Comic Sans':
         return 'cursive';
       case 'Courier':
-        return 'monospace';
+        return 'Courier';
       case 'Georgia':
-        return 'serif';
+        return 'Georgia';
       default:
-        return 'sans-serif';
+        return 'Roboto';
     }
   }
 
@@ -447,12 +447,7 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
                 child: Center(
                   child: Text(
                     _previewText,
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: _previewColor,
-                      fontFamily: _previewFontFamily,
-                    ),
+                    style: _previewTextStyle,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -559,6 +554,70 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
         ),
       ),
     );
+  }
+
+  TextStyle get _previewTextStyle {
+    switch (_selectedFont) {
+      case 'Times New Roman':
+        return TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.w400,
+          fontFamily: 'serif',
+          letterSpacing: 1.0,
+          height: 1.3,
+          color: _previewColor,
+          fontStyle: FontStyle.italic,
+        );
+
+      case 'Comic Sans':
+        return TextStyle(
+          fontSize: 34,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'cursive',
+          letterSpacing: 1.5,
+          height: 1.4,
+          color: _previewColor,
+          shadows: [
+            Shadow(
+              offset: const Offset(1, 1),
+              blurRadius: 2,
+              color: Colors.black.withValues(alpha: 0.2),
+            ),
+          ],
+        );
+
+      case 'Courier':
+        return TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'monospace',
+          letterSpacing: 2.0,
+          height: 1.5,
+          color: _previewColor,
+          decoration: TextDecoration.none,
+        );
+
+      case 'Georgia':
+        return TextStyle(
+          fontSize: 35,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'serif',
+          letterSpacing: 0.5,
+          height: 1.4,
+          color: _previewColor,
+        );
+
+      case 'Arial':
+      default:
+        return TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'sans-serif',
+          letterSpacing: 0,
+          height: 1.2,
+          color: _previewColor,
+        );
+    }
   }
 
   @override
