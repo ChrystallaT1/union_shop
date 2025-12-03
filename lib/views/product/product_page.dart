@@ -31,7 +31,7 @@ class _ProductPageState extends State<ProductPage> {
 
   ProductModel? _product;
   bool _isLoading = true;
-  String? _error;
+  String? _errorMessage;
 
   String? _selectedSize;
   String? _selectedColor;
@@ -46,7 +46,7 @@ class _ProductPageState extends State<ProductPage> {
   Future<void> _loadProduct() async {
     setState(() {
       _isLoading = true;
-      _error = null;
+      _errorMessage = null;
     });
 
     try {
@@ -63,19 +63,19 @@ class _ProductPageState extends State<ProductPage> {
           });
         } else {
           setState(() {
-            _error = 'Product not found';
+            _errorMessage = 'Product not found';
             _isLoading = false;
           });
         }
       } else {
         setState(() {
-          _error = 'Invalid product ID';
+          _errorMessage = 'Invalid product ID';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Error loading product: $e';
+        _errorMessage = 'Error loading product: $e';
         _isLoading = false;
       });
     }
@@ -184,65 +184,81 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: const UnionNavbar(),
+        drawer: const MobileDrawer(),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMessage != null || _product == null) {
+      return Scaffold(
+        appBar: const UnionNavbar(),
+        drawer: const MobileDrawer(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              const Text('Error Loading Product',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(_errorMessage ?? 'Product not found',
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pop(context), // ✅ Back button
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Go Back'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: const UnionNavbar(),
       drawer: const MobileDrawer(),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? _buildErrorView()
-              : _product == null
-                  ? _buildNotFoundView()
-                  : _buildProductView(),
-    );
-  }
-
-  Widget _buildErrorView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              'Error Loading Product',
-              style: Theme.of(context).textTheme.headlineSmall,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              color: Colors.grey[100],
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/'),
+                    icon: const Icon(Icons.home, size: 16),
+                    label: const Text('Home'),
+                  ),
+                  const Text(' > '),
+                  TextButton.icon(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/collections'),
+                    icon: const Icon(Icons.grid_view, size: 16),
+                    label: const Text('Collections'),
+                  ),
+                  const Text(' > '),
+                  TextButton.icon(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back, size: 16),
+                    label: const Text('Back'),
+                  ),
+                  const Text(' > '),
+                  Text(
+                    _product!.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(_error ?? 'Unknown error'),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _loadProduct,
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotFoundView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.search_off, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            Text(
-              'Product Not Found',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            const Text('The product you are looking for does not exist'),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Go Back'),
-            ),
+            // Your existing product page content...
+            _buildProductView(),
           ],
         ),
       ),

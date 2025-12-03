@@ -28,23 +28,24 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
               ),
             )
           : null,
-      automaticallyImplyLeading: isMobile, // Only  on mobile
-      title: const Text(
-        'UPSU Union Shop',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
+      automaticallyImplyLeading: isMobile,
+      title: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/'),
+        child: const Text(
+          'UPSU Union Shop',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
-      // Show different actions based on screen size
       actions: isMobile
           ? _buildMobileActions(context)
           : _buildDesktopActions(context),
     );
   }
 
-  // Desktop: Full navigation menu
   List<Widget> _buildDesktopActions(BuildContext context) {
     return [
       TextButton(
@@ -84,20 +85,19 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       IconButton(
-        icon: const Icon(Icons.shopping_cart, color: Colors.white),
+        icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
         onPressed: () => Navigator.pushNamed(context, '/cart'),
         tooltip: 'Shopping Cart',
       ),
+      const SizedBox(width: 8),
     ];
   }
 
   List<Widget> _buildMobileActions(BuildContext context) {
     return [
       IconButton(
-        icon: const Icon(Icons.shopping_cart,
-            color: Colors.white), // CHANGED from shopping_bag_outlined
-        onPressed: () => Navigator.pushNamed(
-            context, '/cart'), // CHANGED to actually navigate
+        icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+        onPressed: () => Navigator.pushNamed(context, '/cart'),
         tooltip: 'Shopping Cart',
       ),
     ];

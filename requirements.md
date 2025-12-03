@@ -354,12 +354,12 @@ A text personalization page with an associated About page. The form should dynam
 
 #### Acceptance Criteria
 
-- [ ] Personalization form includes text input fields
-- [ ] Form dynamically updates preview based on user input
-- [ ] About page explains personalization service
-- [ ] Form validates input (e.g., character limits)
-- [ ] Users can add personalized items to cart
-- [ ] Personalization options are saved with cart items
+- [✅] Personalization form includes text input fields
+- [✅] Form dynamically updates preview based on user input
+- [✅] About page explains personalization service
+- [✅] Form validates input (e.g., character limits)
+- [✅] Users can add personalized items to cart
+- [✅] Personalization options are saved with cart items
 
 ---
 
@@ -379,12 +379,12 @@ Full navigation system across all pages using buttons, navbar, and URLs. Users s
 
 #### Acceptance Criteria
 
-- [ ] All pages are accessible via navbar links
-- [ ] Back buttons work on all relevant pages
-- [ ] Product and collection links navigate correctly
-- [ ] URL routes are properly configured
-- [ ] Navigation state is maintained appropriately
-- [ ] Deep linking works for specific products/collections
+- [✅] All pages are accessible via navbar links
+- [✅] Back buttons work on all relevant pages
+- [✅] Product and collection links navigate correctly
+- [✅] URL routes are properly configured
+- [✅] Navigation state is maintained appropriately
+- [✅] Deep linking works for specific products/collections
 
 ---
 

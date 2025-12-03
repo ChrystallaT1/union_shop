@@ -116,12 +116,33 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cartItems = _cartService.cartItems;
+
     return Scaffold(
       appBar: const UnionNavbar(),
       drawer: const MobileDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              color: Colors.grey[100],
+              child: Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/'),
+                    icon: const Icon(Icons.home, size: 16),
+                    label: const Text('Home'),
+                  ),
+                  const Text(' > '),
+                  const Text(
+                    'Shopping Cart',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
             _buildHeader(),
             _cartService.cartItems.isEmpty
                 ? _buildEmptyCart()

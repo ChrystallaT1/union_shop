@@ -92,16 +92,34 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
       color: Colors.grey[100],
       child: Column(
         children: [
-          Text(
-            widget.collectionName,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+                tooltip: 'Back to Collections',
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.collectionName,
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Browse products in this collection',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
                 ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Browse products in this collection',
-            style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
           ),
         ],
       ),
