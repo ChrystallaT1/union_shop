@@ -105,11 +105,14 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Future<void> _loadProductByColor(String color) async {
-    // Determine which product family we're in
+    print('🔍 === Color Switch Started ===');
+    print('🔍 Requested color: $color');
+    print('🔍 Current product ID: ${_product!.id}');
+
     String? newProductId;
 
+    // Hoodies
     if (_product!.id.startsWith('hoodie_sport_')) {
-      // UPSU Sport family
       final colorToId = {
         'Navy': 'hoodie_sport_navy',
         'Grey': 'hoodie_sport_grey',
@@ -117,7 +120,6 @@ class _ProductPageState extends State<ProductPage> {
       };
       newProductId = colorToId[color];
     } else if (_product!.id.startsWith('hoodie_upsu_')) {
-      // UPSU Classic family
       final colorToId = {
         'Navy': 'hoodie_upsu_navy',
         'Black': 'hoodie_upsu_black',
@@ -125,20 +127,53 @@ class _ProductPageState extends State<ProductPage> {
       };
       newProductId = colorToId[color];
     } else if (_product!.id.startsWith('hoodie_portsmouth_')) {
-      // University of Portsmouth family
       final colorToId = {
         'Navy': 'hoodie_portsmouth_navy',
         'Burgundy': 'hoodie_portsmouth_burgundy',
       };
       newProductId = colorToId[color];
     }
+    // T-Shirts
+    else if (_product!.id.startsWith('tshirt_upsu_sports_')) {
+      final colorToId = {
+        'Black': 'tshirt_upsu_sports_black',
+        'Navy': 'tshirt_upsu_sports_navy',
+        'Grey': 'tshirt_upsu_sports_grey',
+      };
+      newProductId = colorToId[color];
+    } else if (_product!.id.startsWith('tshirt_portsmouth_full_')) {
+      // ✅ University of Portsmouth Full Text
+      final colorToId = {
+        'Purple': 'tshirt_portsmouth_full_purple',
+        'White': 'tshirt_portsmouth_full_white',
+      };
+      newProductId = colorToId[color];
+    } else if (_product!.id.startsWith('tshirt_portsmouth_')) {
+      // ✅ Portsmouth Arch T-Shirts
+      final colorToId = {
+        'White': 'tshirt_portsmouth_white',
+        'Navy': 'tshirt_portsmouth_navy',
+        'Grey': 'tshirt_portsmouth_grey',
+      };
+      newProductId = colorToId[color];
+    }
 
-    if (newProductId != null) {
+    print('🔍 New product ID: $newProductId');
+
+    if (newProductId != null && newProductId != _product!.id) {
       final product = _productsService.getProductById(newProductId);
+
       if (product != null) {
+        print('🔍 ✅ Product found: ${product.name}');
+
         setState(() {
           _product = product;
+          _selectedColor = color;
         });
+
+        print('🔍 === Color Switch Complete ===');
+      } else {
+        print('🔍 ❌ Product not found for ID: $newProductId');
       }
     }
   }
@@ -580,65 +615,134 @@ class _ProductPageState extends State<ProductPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_product!.sizes.isNotEmpty) ...[
-          const Text(
-            'Size',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        _buildSizeSelector(),
+        const SizedBox(height: 24),
+        _buildColorSelector(),
+      ],
+    );
+  }
+
+  Widget _buildSizeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Size',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _product!.sizes.map((size) {
-              final isSelected = _selectedSize == size;
-              return ChoiceChip(
-                label: Text(size),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() => _selectedSize = size);
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _product!.sizes.map((size) {
+            final isSelected = _selectedSize == size;
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    _selectedSize = size;
+                  });
                 },
-                selectedColor: const Color(0xFF4d2963),
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF4d2963) : Colors.white,
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF4d2963)
+                          : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    size,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 14,
+                    ),
+                  ),
                 ),
-              );
-            }).toList(),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildColorSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Color',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 16),
-        ],
-        if (_product!.colors.isNotEmpty) ...[
-          const Text(
-            'Color',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _product!.colors.map((color) {
-              final isSelected = _selectedColor == color;
-              return ChoiceChip(
-                label: Text(color),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() => _selectedColor = color);
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _product!.colors.map((color) {
+            final isSelected = _selectedColor == color;
+            return Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  print('🔍 Color button clicked: $color');
+                  print('🔍 Current product: ${_product!.id}');
+
+                  // Update selected color immediately
+                  setState(() {
+                    _selectedColor = color;
+                  });
+
+                  // Load new product variant
+                  await _loadProductByColor(color);
                 },
-                selectedColor: const Color(0xFF4d2963),
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF4d2963) : Colors.white,
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF4d2963)
+                          : Colors.grey[300]!,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    color,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontSize: 14,
+                    ),
+                  ),
                 ),
-              );
-            }).toList(),
-          ),
-        ],
+              ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
@@ -770,7 +874,7 @@ class _ProductPageState extends State<ProductPage> {
           const SizedBox(height: 24),
           _buildDescription(),
           const SizedBox(height: 24),
-          _buildOptionsSection(),
+          _buildOptionsSection(), // Calls size & color
           const SizedBox(height: 24),
           _buildQuantityAndAddToCart(),
         ],
