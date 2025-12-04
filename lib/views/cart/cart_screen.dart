@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/models/cart_item_model.dart';
 import 'package:union_shop/services/cart_service.dart';
+import 'package:union_shop/services/auth_service.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_footer.dart';
@@ -633,17 +634,53 @@ class _CartScreenState extends State<CartScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ElevatedButton(
-          onPressed: _proceedToCheckout,
+          onPressed: () {
+            final isLoggedIn = AuthService().isLoggedIn;
+
+            if (!isLoggedIn) {
+              // Show login prompt
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Login Required'),
+                  content: const Text(
+                    'Please login to proceed with checkout.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              // Proceed to checkout
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Checkout coming soon!'),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF4d2963),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
-            textStyle: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            minimumSize: const Size(double.infinity, 48),
           ),
-          child: const Text('Proceed to Checkout'),
+          child: const Text(
+            'PROCEED TO CHECKOUT',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 12),
         OutlinedButton(

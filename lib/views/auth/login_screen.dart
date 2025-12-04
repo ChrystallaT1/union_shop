@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +14,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -27,16 +30,88 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // Simulate login delay
-      await Future.delayed(const Duration(seconds: 2));
+      final error = await _authService.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
       setState(() => _isLoading = false);
 
       if (mounted) {
+        if (error == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.pushReplacementNamed(context, '/');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isLoading = true);
+
+    final error = await _authService.signInWithGoogle();
+
+    setState(() => _isLoading = false);
+
+    if (mounted) {
+      if (error == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Login functionality coming soon!'),
-            backgroundColor: Colors.blue,
+            content: Text('Signed in with Google!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleForgotPassword() async {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your email address first'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final error =
+        await _authService.resetPassword(_emailController.text.trim());
+
+    if (mounted) {
+      if (error == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset email sent! Check your inbox.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -46,8 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const UnionNavbar(), // ✅ Use full navbar
-      drawer: const MobileDrawer(), // ✅ Add drawer
+      appBar: const UnionNavbar(),
+      drawer: const MobileDrawer(),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -59,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Back to home button
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
@@ -69,8 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Title
                   const Text(
                     'Login',
                     style: TextStyle(
@@ -89,8 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-
-                  // Email field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -110,7 +180,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -135,29 +204,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
                       }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 8),
-
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Password reset coming soon!'),
-                          ),
-                        );
-                      },
+                      onPressed: _isLoading ? null : _handleForgotPassword,
                       child: const Text('Forgot Password?'),
                     ),
                   ),
                   const SizedBox(height: 24),
-
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
@@ -187,8 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Divider
                   Row(
                     children: [
                       const Expanded(child: Divider()),
@@ -203,8 +259,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Sign up link
+                  OutlinedButton(
+                    onPressed: _isLoading ? null : _handleGoogleSignIn,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Sign in with Google'),
+                  ),
+                  const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

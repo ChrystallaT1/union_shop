@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
+import 'package:union_shop/services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,6 +16,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _authService = AuthService();
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
@@ -32,15 +35,68 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      await Future.delayed(const Duration(seconds: 2));
+      final error = await _authService.signUp(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        name: _nameController.text.trim(),
+      );
 
       setState(() => _isLoading = false);
 
       if (mounted) {
+        if (error == null) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Account Created!'),
+              content: const Text(
+                'A verification email has been sent to your email address. '
+                'Please verify your email before logging in.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleGoogleSignUp() async {
+    setState(() => _isLoading = true);
+
+    final error = await _authService.signInWithGoogle();
+
+    setState(() => _isLoading = false);
+
+    if (mounted) {
+      if (error == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Signup functionality coming soon!'),
-            backgroundColor: Colors.blue,
+            content: Text('Signed up with Google!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: Colors.red,
           ),
         );
       }
@@ -63,7 +119,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Back button
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
@@ -73,8 +128,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Title
                   const Text(
                     'Sign Up',
                     style: TextStyle(
@@ -93,8 +146,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
-
-                  // Name field
                   TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -106,12 +157,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your name';
                       }
+                      if (value.length < 2) {
+                        return 'Name must be at least 2 characters';
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Email field
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -131,8 +183,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Password field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -164,8 +214,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-
-                  // Confirm password field
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: !_isConfirmPasswordVisible,
@@ -198,8 +246,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-
-                  // Signup button
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleSignup,
                     style: ElevatedButton.styleFrom(
@@ -229,8 +275,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                   ),
                   const SizedBox(height: 24),
-
-                  // Divider
                   Row(
                     children: [
                       const Expanded(child: Divider()),
@@ -245,8 +289,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Login link
+                  OutlinedButton(
+                    onPressed: _isLoading ? null : _handleGoogleSignUp,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Sign up with Google'),
+                  ),
+                  const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

@@ -23,7 +23,6 @@ class AuthService {
     required String name,
   }) async {
     try {
-      // Create user account
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -32,10 +31,8 @@ class AuthService {
       User? user = result.user;
 
       if (user != null) {
-        // Update display name
         await user.updateDisplayName(name);
 
-        // Create user document in Firestore
         await _firestore.collection('users').doc(user.uid).set({
           'uid': user.uid,
           'name': name,
@@ -44,7 +41,6 @@ class AuthService {
           'photoUrl': null,
         });
 
-        // Send email verification
         await user.sendEmailVerification();
 
         return null; // Success
@@ -78,35 +74,29 @@ class AuthService {
   // Sign in with Google
   Future<String?> signInWithGoogle() async {
     try {
-      // Trigger the Google Sign-In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
         return 'Google sign-in was cancelled';
       }
 
-      // Obtain the auth details
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Sign in to Firebase
       UserCredential result = await _auth.signInWithCredential(credential);
 
       User? user = result.user;
 
       if (user != null) {
-        // Check if user document exists
         final userDoc =
             await _firestore.collection('users').doc(user.uid).get();
 
         if (!userDoc.exists) {
-          // Create user document if it doesn't exist
           await _firestore.collection('users').doc(user.uid).set({
             'uid': user.uid,
             'name': user.displayName ?? 'User',
@@ -158,7 +148,6 @@ class AuthService {
         await user.updatePhotoURL(photoUrl);
       }
 
-      // Update Firestore document
       await _firestore.collection('users').doc(user.uid).update({
         if (name != null) 'name': name,
         if (photoUrl != null) 'photoUrl': photoUrl,

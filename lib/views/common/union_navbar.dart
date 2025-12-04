@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:union_shop/services/auth_service.dart';
 
 class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
   final bool highlightSale;
@@ -74,15 +76,30 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: () => Navigator.pushNamed(context, '/about'),
         child: const Text('About Us', style: TextStyle(color: Colors.white)),
       ),
-      TextButton(
-        onPressed: () => Navigator.pushNamed(context, '/login'),
-        child: Text(
-          'Account',
-          style: TextStyle(
-            color: highlightAccount ? Colors.amber : Colors.white,
-            fontWeight: highlightAccount ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
+      StreamBuilder<User?>(
+        stream: AuthService().authStateChanges,
+        builder: (context, snapshot) {
+          final isLoggedIn = snapshot.data != null;
+          return TextButton.icon(
+            onPressed: () => Navigator.pushNamed(
+              context,
+              isLoggedIn ? '/account' : '/login',
+            ),
+            icon: Icon(
+              isLoggedIn ? Icons.account_circle : Icons.login,
+              color: Colors.white,
+              size: 20,
+            ),
+            label: Text(
+              isLoggedIn ? 'Account' : 'Login',
+              style: TextStyle(
+                color: highlightAccount ? Colors.amber : Colors.white,
+                fontWeight:
+                    highlightAccount ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+          );
+        },
       ),
       IconButton(
         icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
