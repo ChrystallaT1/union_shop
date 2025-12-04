@@ -12,10 +12,7 @@ class AboutScreen extends StatelessWidget {
       // Navigation bar at the top
       appBar: const UnionNavbar(),
       // Custom drawer
-      drawer: const MobileDrawer(
-        highlightSale: true,
-        highlightAccount: true,
-      ),
+      drawer: const MobileDrawer(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
