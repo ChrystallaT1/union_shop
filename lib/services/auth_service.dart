@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -74,42 +75,73 @@ class AuthService {
   // Sign in with Google
   Future<String?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Check if running on web
+      final isWeb = kIsWeb;
 
-      if (googleUser == null) {
-        return 'Google sign-in was cancelled';
-      }
+      if (isWeb) {
+        // Use popup for web
+        GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+        UserCredential result = await _auth.signInWithPopup(googleProvider);
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        User? user = result.user;
 
-      UserCredential result = await _auth.signInWithCredential(credential);
+        if (user != null) {
+          final userDoc =
+              await _firestore.collection('users').doc(user.uid).get();
 
-      User? user = result.user;
-
-      if (user != null) {
-        final userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-
-        if (!userDoc.exists) {
-          await _firestore.collection('users').doc(user.uid).set({
-            'uid': user.uid,
-            'name': user.displayName ?? 'User',
-            'email': user.email,
-            'createdAt': FieldValue.serverTimestamp(),
-            'photoUrl': user.photoURL,
-          });
+          if (!userDoc.exists) {
+            await _firestore.collection('users').doc(user.uid).set({
+              'uid': user.uid,
+              'name': user.displayName ?? 'User',
+              'email': user.email,
+              'createdAt': FieldValue.serverTimestamp(),
+              'photoUrl': user.photoURL,
+            });
+          }
         }
-      }
 
-      return null; // Success
+        return null; // Success
+      } else {
+        // Use native sign-in for mobile
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+        if (googleUser == null) {
+          return 'Google sign-in was cancelled';
+        }
+
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        UserCredential result = await _auth.signInWithCredential(credential);
+
+        User? user = result.user;
+
+        if (user != null) {
+          final userDoc =
+              await _firestore.collection('users').doc(user.uid).get();
+
+          if (!userDoc.exists) {
+            await _firestore.collection('users').doc(user.uid).set({
+              'uid': user.uid,
+              'name': user.displayName ?? 'User',
+              'email': user.email,
+              'createdAt': FieldValue.serverTimestamp(),
+              'photoUrl': user.photoURL,
+            });
+          }
+        }
+
+        return null; // Success
+      }
     } catch (e) {
-      return 'Google sign-in failed: $e';
+      print('Google sign-in error: $e');
+      return 'Google sign-in failed: ${e.toString()}';
     }
   }
 
