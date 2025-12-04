@@ -19,7 +19,7 @@ class _SaleScreenState extends State<SaleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const UnionNavbar(highlightSale: true),
-      drawer: const MobileDrawer(highlightSale: true),
+      drawer: const MobileDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [
