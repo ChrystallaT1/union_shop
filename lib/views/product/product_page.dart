@@ -142,18 +142,25 @@ class _ProductPageState extends State<ProductPage> {
       };
       newProductId = colorToId[color];
     } else if (_product!.id.startsWith('tshirt_portsmouth_full_')) {
-      // ✅ University of Portsmouth Full Text
       final colorToId = {
         'Purple': 'tshirt_portsmouth_full_purple',
         'White': 'tshirt_portsmouth_full_white',
       };
       newProductId = colorToId[color];
     } else if (_product!.id.startsWith('tshirt_portsmouth_')) {
-      // ✅ Portsmouth Arch T-Shirts
       final colorToId = {
         'White': 'tshirt_portsmouth_white',
         'Navy': 'tshirt_portsmouth_navy',
         'Grey': 'tshirt_portsmouth_grey',
+      };
+      newProductId = colorToId[color];
+    }
+    // Accessories
+    else if (_product!.id.startsWith('accessory_cap_')) {
+      // ✅ University of Portsmouth Caps
+      final colorToId = {
+        'Black': 'accessory_cap_black',
+        'Navy': 'accessory_cap_navy',
       };
       newProductId = colorToId[color];
     }

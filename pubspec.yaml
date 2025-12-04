@@ -41,4 +41,8 @@ flutter:
     - assets/images/products/tshirt_portsmouth_white.png
     - assets/images/products/tshirt_portsmouth_navy.png
     - assets/images/products/tshirt_portsmouth_grey.png
+    - assets/images/products/accessory_cap_black.png
+    - assets/images/products/accessory_cap_navy.png
+    - assets/images/products/accessory_water_bottle_black.png
+    - assets/images/products/accessory_backpack_black.png
     - assets/images/google_logo.png

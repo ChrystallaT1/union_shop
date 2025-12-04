@@ -291,6 +291,80 @@ class ProductsService {
         salePrice: 16.99,
         popularity: 240,
       ),
+
+      // ========== ACCESSORIES ==========
+
+      ProductModel(
+        id: 'accessory_water_bottle_black',
+        name: 'UPSU Water Bottle - Black',
+        description:
+            'Premium stainless steel water bottle with UPSU branding. Keeps drinks cold for 24 hours or hot for 12 hours. 750ml capacity.',
+        price: 15.99,
+        imageUrl: 'assets/images/products/accessory_water_bottle_black.png',
+        collectionId: 'accessories',
+        category: 'accessories',
+        sizes: ['One Size'],
+        colors: ['Black'],
+        stockQuantity: 100,
+        dateAdded: DateTime.now().subtract(const Duration(days: 15)),
+        isOnSale: false,
+        salePrice: null,
+        popularity: 320,
+      ),
+
+      ProductModel(
+        id: 'accessory_cap_black',
+        name: 'University of Portsmouth Cap - Black',
+        description:
+            'Classic black baseball cap with embroidered University of Portsmouth text. Adjustable strap for perfect fit.',
+        price: 12.99,
+        imageUrl: 'assets/images/products/accessory_cap_black.png',
+        collectionId: 'accessories',
+        category: 'accessories',
+        sizes: ['One Size'],
+        colors: ['Black', 'Navy'],
+        stockQuantity: 75,
+        dateAdded: DateTime.now().subtract(const Duration(days: 12)),
+        isOnSale: true,
+        salePrice: 9.99,
+        popularity: 280,
+      ),
+
+      ProductModel(
+        id: 'accessory_cap_navy',
+        name: 'University of Portsmouth Cap - Navy',
+        description:
+            'Navy blue baseball cap featuring University of Portsmouth branding. Comfortable cotton twill construction.',
+        price: 12.99,
+        imageUrl: 'assets/images/products/accessory_cap_navy.png',
+        collectionId: 'accessories',
+        category: 'accessories',
+        sizes: ['One Size'],
+        colors: ['Black', 'Navy'],
+        stockQuantity: 80,
+        dateAdded: DateTime.now().subtract(const Duration(days: 12)),
+        isOnSale: false,
+        salePrice: null,
+        popularity: 290,
+      ),
+
+      ProductModel(
+        id: 'accessory_backpack_black',
+        name: 'UPSU Backpack - Black',
+        description:
+            'Durable canvas backpack with UPSU logo. Features padded laptop compartment, multiple pockets, and adjustable straps. Perfect for campus life.',
+        price: 29.99,
+        imageUrl: 'assets/images/products/accessory_backpack_black.png',
+        collectionId: 'accessories',
+        category: 'accessories',
+        sizes: ['One Size'],
+        colors: ['Black'],
+        stockQuantity: 50,
+        dateAdded: DateTime.now().subtract(const Duration(days: 8)),
+        isOnSale: true,
+        salePrice: 24.99,
+        popularity: 350,
+      ),
     ];
   }
 
