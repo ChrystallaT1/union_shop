@@ -157,10 +157,17 @@ class _ProductPageState extends State<ProductPage> {
     }
     // Accessories
     else if (_product!.id.startsWith('accessory_cap_')) {
-      // ✅ University of Portsmouth Caps
       final colorToId = {
         'Black': 'accessory_cap_black',
         'Navy': 'accessory_cap_navy',
+      };
+      newProductId = colorToId[color];
+    }
+    // Stationery
+    else if (_product!.id.startsWith('stationery_pen_set_')) {
+      final colorToId = {
+        'Black': 'stationery_pen_set_black',
+        'Navy': 'stationery_pen_set_navy',
       };
       newProductId = colorToId[color];
     }

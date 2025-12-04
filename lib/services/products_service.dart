@@ -365,6 +365,62 @@ class ProductsService {
         salePrice: 24.99,
         popularity: 350,
       ),
+
+      // ========== STATIONERY ==========
+
+      ProductModel(
+        id: 'stationery_pen_set_black',
+        name: 'UPSU Premium Pen Set - Black',
+        description:
+            'Elegant black pen set featuring UPSU branding. Includes ballpoint pen and rollerball pen in premium gift box. Perfect for students and graduates.',
+        price: 19.99,
+        imageUrl: 'assets/images/products/stationery_pen_set_black.png',
+        collectionId: 'stationery',
+        category: 'stationery',
+        sizes: ['One Size'],
+        colors: ['Black', 'Navy'],
+        stockQuantity: 60,
+        dateAdded: DateTime.now().subtract(const Duration(days: 20)),
+        isOnSale: false,
+        salePrice: null,
+        popularity: 210,
+      ),
+
+      ProductModel(
+        id: 'stationery_pen_set_navy',
+        name: 'UPSU Premium Pen Set - Navy',
+        description:
+            'Sophisticated navy pen set with UPSU logo. High-quality writing instruments presented in branded case. Ideal gift for any occasion.',
+        price: 19.99,
+        imageUrl: 'assets/images/products/stationery_pen_set_navy.png',
+        collectionId: 'stationery',
+        category: 'stationery',
+        sizes: ['One Size'],
+        colors: ['Black', 'Navy'],
+        stockQuantity: 55,
+        dateAdded: DateTime.now().subtract(const Duration(days: 20)),
+        isOnSale: true,
+        salePrice: 16.99,
+        popularity: 230,
+      ),
+
+      ProductModel(
+        id: 'stationery_notebook_purple',
+        name: 'Portsmouth Notebook - Purple',
+        description:
+            'Premium A5 hardcover notebook with Portsmouth branding. Features elastic closure, ribbon bookmark, and lined pages. 192 pages of quality paper.',
+        price: 8.99,
+        imageUrl: 'assets/images/products/stationery_notebook_purple.png',
+        collectionId: 'stationery',
+        category: 'stationery',
+        sizes: ['A5'],
+        colors: ['Purple'],
+        stockQuantity: 100,
+        dateAdded: DateTime.now().subtract(const Duration(days: 15)),
+        isOnSale: false,
+        salePrice: null,
+        popularity: 270,
+      ),
     ];
   }
 
