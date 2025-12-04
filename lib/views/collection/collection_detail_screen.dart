@@ -8,11 +8,13 @@ import 'package:union_shop/views/common/union_footer.dart';
 
 class CollectionDetailScreen extends StatefulWidget {
   final String collectionName;
+  final String collectionDisplayName;
 
   const CollectionDetailScreen({
-    super.key,
+    Key? key,
     required this.collectionName,
-  });
+    required this.collectionDisplayName,
+  }) : super(key: key);
 
   @override
   State<CollectionDetailScreen> createState() => _CollectionDetailScreenState();
@@ -29,10 +31,14 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   final int _itemsPerPage = 12;
 
   List<ProductModel> get _filteredProducts {
+    print('Getting products for collection: ${widget.collectionName}');
+
     var products = _productsService.getProductsByCollection(
       widget.collectionName,
       sortBy: _sortBy,
     );
+
+    print('Found ${products.length} products');
 
     if (_filterSize != 'all') {
       products = products.where((p) => p.sizes.contains(_filterSize)).toList();
@@ -70,6 +76,13 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ✅ DEBUG: Print received values
+    print('CollectionDetailScreen - collectionName: ${widget.collectionName}');
+    print(
+        'CollectionDetailScreen - collectionDisplayName: ${widget.collectionDisplayName}');
+
+    final isMobile = MediaQuery.of(context).size.width < 768;
+
     return Scaffold(
       appBar: const UnionNavbar(),
       drawer: const MobileDrawer(),
@@ -307,91 +320,46 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
   }
 
   Widget _buildProductCard(ProductModel product) {
-    return GestureDetector(
-      onTap: () {
-        print('🔍 Navigating to product: ${product.id} - ${product.name}');
-        Navigator.pushNamed(
-          context,
-          '/product',
-          arguments: {
-            'id': product.id,
-            'name': product.name,
-            'price': '£${product.displayPrice.toStringAsFixed(2)}',
-            'image': product.imageUrl,
-          },
-        );
-      },
-      child: Card(
-        elevation: 2,
+    return Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: () {
+          print('🔍 Navigating to product: ${product.id}');
+
+          Navigator.pushNamed(
+            context,
+            '/product',
+            arguments: {'productId': product.id},
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(8)),
-                    child: Image.network(
-                      product.imageUrl,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child:
-                              const Icon(Icons.image_not_supported, size: 64),
-                        );
-                      },
-                    ),
+            // Product Image
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(4),
                   ),
-                  if (product.isOnSale)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red[700],
-                          borderRadius: BorderRadius.circular(4),
+                ),
+                child: product.imageUrl.isNotEmpty
+                    ? Image.asset(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Center(
+                          child: Icon(Icons.image_not_supported, size: 40),
                         ),
-                        child: Text(
-                          product.discountPercentage,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (product.stockQuantity < 10)
-                    Positioned(
-                      bottom: 8,
-                      left: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.orange[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'Only ${product.stockQuantity} left!',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+                      )
+                    : const Center(child: Icon(Icons.image, size: 40)),
               ),
             ),
+
+            // Product Details
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -405,23 +373,12 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  if (product.isOnSale)
-                    Text(
-                      '£${product.price.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
                   Text(
                     '£${product.displayPrice.toStringAsFixed(2)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: product.isOnSale
-                          ? Colors.red[700]
-                          : const Color(0xFF4d2963),
+                      color: Color(0xFF4d2963),
                     ),
                   ),
                 ],

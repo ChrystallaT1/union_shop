@@ -48,16 +48,16 @@ class MyApp extends StatelessWidget {
         '/collections': (context) => const CollectionsScreen(),
         '/collection-detail': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as String;
-          return CollectionDetailScreen(collectionName: args);
+          return CollectionDetailScreen(
+            collectionName: args,
+            collectionDisplayName: '',
+          );
         },
         '/product': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;
           return ProductPage(
-            productId: args['id'],
-            productName: args['name'],
-            productPrice: args['price'],
-            productImage: args['image'],
+            productId: args['productId'],
           );
         },
         '/sale': (context) => const SaleScreen(),

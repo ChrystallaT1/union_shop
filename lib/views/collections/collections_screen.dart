@@ -5,6 +5,7 @@ import 'package:union_shop/utils/screen_size_helper.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/views/common/union_footer.dart';
+import 'package:union_shop/views/collection/collection_detail_screen.dart';
 
 class CollectionsScreen extends StatefulWidget {
   const CollectionsScreen({super.key});
@@ -22,11 +23,40 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
   int _currentPage = 0;
   final int _itemsPerPage = 6;
 
+  final List<Map<String, String>> collections = [
+    {
+      'id': 'hoodies',
+      'name': 'Hoodies',
+      'description': 'Comfortable hoodies for all occasions',
+      'image': 'assets/images/collections/hoodies.png',
+    },
+    {
+      'id': 'tshirts',
+      'name': 'T-Shirts',
+      'description': 'Classic t-shirts with UPSU branding',
+      'image': 'assets/images/collections/tshirts.png',
+    },
+    {
+      'id': 'accessories',
+      'name': 'Accessories',
+      'description': 'Complete your look with our accessories',
+      'image': 'assets/images/collections/accessories.png',
+    },
+    {
+      'id': 'sportswear',
+      'name': 'Sportswear',
+      'description': 'Performance wear for active lifestyles',
+      'image': 'assets/images/collections/sportswear.png',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 768;
+
     return Scaffold(
       appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      drawer: isMobile ? const MobileDrawer() : null,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -202,71 +232,52 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
           constraints: BoxConstraints(
             maxWidth: ScreenSize.getMaxContentWidth(context),
           ),
-          child: GridView.count(
+          child: GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: ScreenSize.getGridColumns(context).clamp(2, 4),
-            childAspectRatio: 0.8,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            children: [
-              _buildCollectionCard(
-                title: 'Hoodies',
-                subtitle: 'Comfortable hoodies for all occasions',
-                imageUrl:
-                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                collectionId: 'hoodies',
-              ),
-              _buildCollectionCard(
-                title: 'T-Shirts',
-                subtitle: 'Classic t-shirts with university branding',
-                imageUrl:
-                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                collectionId: 't-shirts',
-              ),
-              _buildCollectionCard(
-                title: 'Accessories',
-                subtitle: 'Bags, caps, and more',
-                imageUrl:
-                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityPostcard2_1024x1024@2x.jpg?v=1752232561',
-                collectionId: 'accessories',
-              ),
-              _buildCollectionCard(
-                title: 'Stationery',
-                subtitle: 'Notebooks, pens, and study supplies',
-                imageUrl:
-                    'https://shop.upsu.net/cdn/shop/files/PortsmouthCityMagnet1_1024x1024@2x.jpg?v=1752230282',
-                collectionId: 'stationery',
-              ),
-            ],
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.8,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: collections.length,
+            itemBuilder: (context, index) {
+              final collection = collections[index];
+              return _buildCollectionCard(collection);
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCollectionCard({
-    required String title,
-    required String subtitle,
-    required String imageUrl,
-    required String collectionId,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        print('🔍 Navigating to collection: $collectionId');
-        Navigator.pushNamed(
-          context,
-          '/collection-detail',
-          arguments: collectionId,
-        );
-      },
-      child: Card(
-        elevation: 4,
+  Widget _buildCollectionCard(Map<String, String> collection) {
+    return Card(
+      elevation: 4,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          // ✅ DEBUG: Print what we're passing
+          print('Collection clicked: ${collection['id']}');
+          print('Collection name: ${collection['name']}');
+
+          // Navigate
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CollectionDetailScreen(
+                collectionName: collection['id']!,
+                collectionDisplayName: collection['name']!,
+              ),
+            ),
+          );
+        },
         child: Column(
           children: [
             Expanded(
-              child: Image.network(
-                imageUrl,
+              child: Image.asset(
+                collection['image']!,
                 fit: BoxFit.cover,
                 width: double.infinity,
                 errorBuilder: (context, error, stackTrace) {
@@ -282,7 +293,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
               child: Column(
                 children: [
                   Text(
-                    title,
+                    collection['name']!,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -291,7 +302,7 @@ class _CollectionsScreenState extends State<CollectionsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    subtitle,
+                    collection['description']!,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[600],

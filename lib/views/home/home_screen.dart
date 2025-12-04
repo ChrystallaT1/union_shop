@@ -185,12 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pushNamed(
           context,
           '/product',
-          arguments: {
-            'id': product.id,
-            'name': product.name,
-            'price': '£${product.displayPrice.toStringAsFixed(2)}',
-            'image': product.imageUrl,
-          },
+          arguments: {'productId': product.id},
         );
       },
       child: Card(

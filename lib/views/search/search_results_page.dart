@@ -288,11 +288,10 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
         final product = _filteredResults[index];
         return GestureDetector(
           onTap: () {
-            Navigator.push(
+            Navigator.pushNamed(
               context,
-              MaterialPageRoute(
-                builder: (context) => ProductPage(productId: product.id),
-              ),
+              '/product',
+              arguments: {'productId': product.id},
             );
           },
           child: Card(
@@ -310,7 +309,7 @@ class _SearchResultsPageState extends State<SearchResultsPage> {
                           const BorderRadius.vertical(top: Radius.circular(4)),
                     ),
                     child: product.imageUrl.isNotEmpty
-                        ? Image.network(
+                        ? Image.asset(
                             product.imageUrl,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => const Center(

@@ -10,17 +10,11 @@ import 'package:union_shop/views/common/union_footer.dart';
 
 class ProductPage extends StatefulWidget {
   final String? productId;
-  final String? productName;
-  final String? productPrice;
-  final String? productImage;
 
   const ProductPage({
-    super.key,
+    Key? key,
     this.productId,
-    this.productName,
-    this.productPrice,
-    this.productImage,
-  });
+  }) : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
@@ -39,9 +33,11 @@ class _ProductPageState extends State<ProductPage> {
   int _quantity = 1;
 
   @override
-  void initState() {
-    super.initState();
-    _loadProduct();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isLoading) {
+      _loadProduct();
+    }
   }
 
   Future<void> _loadProduct() async {
@@ -51,8 +47,33 @@ class _ProductPageState extends State<ProductPage> {
     });
 
     try {
-      if (widget.productId != null) {
-        final product = _productsService.getProductById(widget.productId!);
+      String? productId = widget.productId;
+
+      // Try to get productId from route arguments if not provided
+      if (productId == null || productId.isEmpty) {
+        final args = ModalRoute.of(context)?.settings.arguments;
+
+        print('🔍 Route arguments: $args');
+        print('🔍 Args type: ${args.runtimeType}');
+
+        if (args != null) {
+          if (args is Map<String, dynamic>) {
+            productId = args['productId'] as String?;
+            print('🔍 Extracted productId from Map: $productId');
+          } else if (args is String) {
+            productId = args;
+            print('🔍 Args is String: $productId');
+          }
+        }
+      }
+
+      print('🔍 Final productId: $productId');
+
+      if (productId != null && productId.isNotEmpty) {
+        final product = _productsService.getProductById(productId);
+
+        print('🔍 Product found: ${product?.name}');
+
         if (product != null) {
           setState(() {
             _product = product;
@@ -64,21 +85,40 @@ class _ProductPageState extends State<ProductPage> {
           });
         } else {
           setState(() {
-            _errorMessage = 'Product not found';
+            _errorMessage = 'Product not found with ID: $productId';
             _isLoading = false;
           });
         }
       } else {
         setState(() {
-          _errorMessage = 'Invalid product ID';
+          _errorMessage = 'No product ID provided';
           _isLoading = false;
         });
       }
     } catch (e) {
+      print('🔍 Error loading product: $e');
       setState(() {
         _errorMessage = 'Error loading product: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadProductByColor(String color) async {
+    final colorToId = {
+      'Navy': 'hoodie_sport_navy',
+      'Grey': 'hoodie_sport_grey',
+      'Black': 'hoodie_sport_black',
+    };
+
+    final productId = colorToId[color];
+    if (productId != null) {
+      final product = _productsService.getProductById(productId);
+      if (product != null) {
+        setState(() {
+          _product = product;
+        });
+      }
     }
   }
 
@@ -188,31 +228,34 @@ class _ProductPageState extends State<ProductPage> {
     if (_isLoading) {
       return Scaffold(
         appBar: UnionNavbar(),
-        drawer: MobileDrawer(),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
-    if (_errorMessage != null || _product == null) {
+    if (_product == null || _errorMessage != null) {
       return Scaffold(
-        appBar: UnionNavbar(), // ✅ Remove const
-        drawer: MobileDrawer(), // ✅ Remove const
+        appBar: UnionNavbar(),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
               const SizedBox(height: 16),
-              const Text('Error Loading Product',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(_errorMessage ?? 'Product not found',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+              Text(
+                _errorMessage ?? 'Product not found',
+                style: const TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () => Navigator.pop(context), // ✅ Back button
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Go Back'),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Go Back'),
               ),
             ],
           ),
@@ -220,61 +263,44 @@ class _ProductPageState extends State<ProductPage> {
       );
     }
 
-    return Scaffold(
-      appBar: UnionNavbar(), // ✅ Remove const
-      drawer: MobileDrawer(), // ✅ Remove const
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Breadcrumb navigation
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              color: Colors.grey[100],
-              child: Row(
-                children: [
-                  TextButton.icon(
-                    onPressed: () => Navigator.pushNamed(context, '/'),
-                    icon: const Icon(Icons.home, size: 16),
-                    label: const Text('Home'),
-                  ),
-                  const Text(' > '),
-                  TextButton.icon(
-                    onPressed: () =>
-                        Navigator.pushNamed(context, '/collections'),
-                    icon: const Icon(Icons.grid_view, size: 16),
-                    label: const Text('Collections'),
-                  ),
-                  const Text(' > '),
-                  TextButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, size: 16),
-                    label: const Text('Back'),
-                  ),
-                  const Text(' > '),
-                  Text(
-                    _product!.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            // Main content ✅ This is the correct method to call
-            _buildProductView(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductView() {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
-    return SingleChildScrollView(
-      child: Column(
+    return Scaffold(
+      appBar: UnionNavbar(),
+      drawer: isMobile ? MobileDrawer() : null,
+      body: Column(
         children: [
-          if (isMobile) _buildMobileLayout() else _buildDesktopLayout(),
-          const UnionFooter(),
+          // Breadcrumb
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Colors.grey[100],
+            child: Row(
+              children: [
+                TextButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, '/'),
+                  icon: const Icon(Icons.home, size: 16),
+                  label: const Text('Home', style: TextStyle(fontSize: 12)),
+                ),
+                const Text(' > ', style: TextStyle(fontSize: 12)),
+                TextButton.icon(
+                  onPressed: () => Navigator.pushNamed(context, '/collections'),
+                  icon: const Icon(Icons.grid_view, size: 16),
+                  label:
+                      const Text('Collections', style: TextStyle(fontSize: 12)),
+                ),
+                const Text(' > ', style: TextStyle(fontSize: 12)),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Back', style: TextStyle(fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
+
+          // Main Content
+          Expanded(
+            child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
+          ),
         ],
       ),
     );
@@ -284,54 +310,83 @@ class _ProductPageState extends State<ProductPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildProductImage(),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProductHeader(),
-              const SizedBox(height: 16),
-              _buildStockInfo(),
-              const SizedBox(height: 16),
-              _buildDescription(),
-              const SizedBox(height: 24),
-              _buildOptionsSection(),
-              const SizedBox(height: 24),
-              _buildQuantityAndAddToCart(),
-            ],
+        // Product Image
+        Container(
+          width: double.infinity,
+          height: 400,
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: _product!.imageUrl.isNotEmpty
+                ? Image.asset(
+                    // ✅ Changed to Image.asset
+                    _product!.imageUrl,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, size: 100);
+                    },
+                  )
+                : const Icon(Icons.image, size: 100, color: Colors.grey),
           ),
         ),
+
+        const SizedBox(height: 24),
+
+        // Product Details
+        _buildProductDetails(),
       ],
     );
   }
 
   Widget _buildDesktopLayout() {
     return Padding(
-      padding: const EdgeInsets.all(32.0),
+      padding: const EdgeInsets.all(24),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Image Section - Uses Image.asset for local images
           Expanded(
-            flex: 1,
-            child: _buildProductImage(),
+            flex: 55,
+            child: Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Center(
+                child: _product!.imageUrl.isNotEmpty
+                    ? Image.asset(
+                        // ✅ Changed to Image.asset
+                        _product!.imageUrl,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          print('Error loading image: ${_product!.imageUrl}');
+                          return const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image,
+                                  size: 100, color: Colors.grey),
+                              SizedBox(height: 16),
+                              Text('Image not found'),
+                            ],
+                          );
+                        },
+                      )
+                    : const Icon(Icons.image, size: 100, color: Colors.grey),
+              ),
+            ),
           ),
-          const SizedBox(width: 32),
+
+          const SizedBox(width: 24),
+
+          // Details Section
           Expanded(
-            flex: 1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProductHeader(),
-                const SizedBox(height: 16),
-                _buildStockInfo(),
-                const SizedBox(height: 16),
-                _buildDescription(),
-                const SizedBox(height: 24),
-                _buildOptionsSection(),
-                const SizedBox(height: 24),
-                _buildQuantityAndAddToCart(),
-              ],
+            flex: 45,
+            child: SingleChildScrollView(
+              child: _buildProductDetails(),
             ),
           ),
         ],
@@ -679,6 +734,26 @@ class _ProductPageState extends State<ProductPage> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildProductDetails() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProductHeader(),
+          const SizedBox(height: 16),
+          _buildStockInfo(),
+          const SizedBox(height: 24),
+          _buildDescription(),
+          const SizedBox(height: 24),
+          _buildOptionsSection(),
+          const SizedBox(height: 24),
+          _buildQuantityAndAddToCart(),
+        ],
+      ),
     );
   }
 }
