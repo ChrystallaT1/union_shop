@@ -14,7 +14,8 @@ import 'package:union_shop/views/personalization/print_shack_screen.dart';
 import 'package:union_shop/views/personalization/print_shack_about_screen.dart';
 import 'package:union_shop/views/account/account_dashboard.dart';
 import 'package:union_shop/views/account/edit_profile_screen.dart';
-import 'package:union_shop/services/cart_service.dart'; // ✅ Add this
+import 'package:union_shop/services/cart_service.dart';
+import 'package:union_shop/views/search/search_results_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +69,10 @@ class MyApp extends StatelessWidget {
         '/print-shack-about': (context) => const PrintShackAboutScreen(),
         '/edit-profile': (context) => const EditProfileScreen(),
         '/account': (context) => const AccountDashboard(),
+        '/search': (context) {
+          final query = ModalRoute.of(context)!.settings.arguments as String;
+          return SearchResultsPage(query: query);
+        },
       },
       onUnknownRoute: (settings) {
         return MaterialPageRoute(

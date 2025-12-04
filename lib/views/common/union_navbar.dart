@@ -32,16 +32,65 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
             )
           : null,
       automaticallyImplyLeading: isMobile,
-      title: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/'),
-        child: const Text(
-          'UPSU Union Shop',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
+      title: Row(
+        children: [
+          // Logo text on far left
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/'),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.store, color: Colors.white, size: 24),
+                const SizedBox(width: 8),
+                const Text(
+                  'UPSU',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          if (!isMobile) ...[
+            const SizedBox(width: 24),
+            // Search bar in the middle
+            Expanded(
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search products...',
+                    hintStyle: const TextStyle(fontSize: 14),
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.9),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    isDense: true,
+                  ),
+                  style: const TextStyle(fontSize: 14),
+                  onSubmitted: (query) {
+                    if (query.isNotEmpty) {
+                      Navigator.pushNamed(
+                        context,
+                        '/search',
+                        arguments: query,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
       actions: isMobile
           ? _buildMobileActions(context)
@@ -51,6 +100,7 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
 
   List<Widget> _buildDesktopActions(BuildContext context) {
     return [
+      // Navigation links
       TextButton(
         onPressed: () => Navigator.pushNamed(context, '/'),
         child: const Text('Home', style: TextStyle(color: Colors.white)),
@@ -77,6 +127,8 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: () => Navigator.pushNamed(context, '/about'),
         child: const Text('About Us', style: TextStyle(color: Colors.white)),
       ),
+
+      // Account button
       StreamBuilder<User?>(
         stream: AuthService().authStateChanges,
         builder: (context, snapshot) {
@@ -102,15 +154,16 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
+
       // Cart button with badge
       Stack(
         children: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
+            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
             onPressed: () => Navigator.pushNamed(context, '/cart'),
             tooltip: 'Cart',
           ),
-          // Cart badge - now uses ValueNotifier
+          // Cart badge
           Positioned(
             right: 8,
             top: 8,

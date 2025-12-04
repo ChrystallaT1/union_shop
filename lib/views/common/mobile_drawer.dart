@@ -56,6 +56,34 @@ class MobileDrawer extends StatelessWidget {
             },
           ),
 
+          // Search Field
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search products...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                filled: true,
+                fillColor: Colors.grey[100],
+              ),
+              onSubmitted: (query) {
+                if (query.isNotEmpty) {
+                  Navigator.pop(context); // Close drawer
+                  Navigator.pushNamed(
+                    context,
+                    '/search',
+                    arguments: query,
+                  );
+                }
+              },
+            ),
+          ),
+
+          const Divider(),
+
           // Home
           ListTile(
             leading: const Icon(Icons.home),

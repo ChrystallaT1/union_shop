@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ProductModel {
   final String id;
   final String name;
@@ -38,4 +40,6 @@ class ProductModel {
     final discount = ((price - salePrice!) / price * 100).round();
     return '$discount% OFF';
   }
+
+  static fromFirestore(QueryDocumentSnapshot<Map<String, dynamic>> doc) {}
 }
