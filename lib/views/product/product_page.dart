@@ -105,15 +105,36 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   Future<void> _loadProductByColor(String color) async {
-    final colorToId = {
-      'Navy': 'hoodie_sport_navy',
-      'Grey': 'hoodie_sport_grey',
-      'Black': 'hoodie_sport_black',
-    };
+    // Determine which product family we're in
+    String? newProductId;
 
-    final productId = colorToId[color];
-    if (productId != null) {
-      final product = _productsService.getProductById(productId);
+    if (_product!.id.startsWith('hoodie_sport_')) {
+      // UPSU Sport family
+      final colorToId = {
+        'Navy': 'hoodie_sport_navy',
+        'Grey': 'hoodie_sport_grey',
+        'Black': 'hoodie_sport_black',
+      };
+      newProductId = colorToId[color];
+    } else if (_product!.id.startsWith('hoodie_upsu_')) {
+      // UPSU Classic family
+      final colorToId = {
+        'Navy': 'hoodie_upsu_navy',
+        'Black': 'hoodie_upsu_black',
+        'Grey': 'hoodie_upsu_grey',
+      };
+      newProductId = colorToId[color];
+    } else if (_product!.id.startsWith('hoodie_portsmouth_')) {
+      // University of Portsmouth family
+      final colorToId = {
+        'Navy': 'hoodie_portsmouth_navy',
+        'Burgundy': 'hoodie_portsmouth_burgundy',
+      };
+      newProductId = colorToId[color];
+    }
+
+    if (newProductId != null) {
+      final product = _productsService.getProductById(newProductId);
       if (product != null) {
         setState(() {
           _product = product;

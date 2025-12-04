@@ -28,4 +28,9 @@ flutter:
     - assets/images/products/hoodie_sport_grey.png
     - assets/images/products/hoodie_sport_navy.png
     - assets/images/products/hoodie_sport_black.png
+    - assets/images/products/hoodie_upsu_navy.png
+    - assets/images/products/hoodie_upsu_black.png
+    - assets/images/products/hoodie_upsu_grey.png
+    - assets/images/products/hoodie_portsmouth_navy.png
+    - assets/images/products/hoodie_portsmouth_burgundy.png
     - assets/images/google_logo.png
