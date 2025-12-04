@@ -97,7 +97,7 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
     return text.isNotEmpty && text.length <= _maxCharacters;
   }
 
-  void _addToCart() {
+  Future<void> _addToCart() async {
     if (!_isValid) {
       _showSnackbar(
         'Please enter text (1-$_maxCharacters characters)',
@@ -125,7 +125,7 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
       personalization: personalization,
     );
 
-    final success = _cartService.addToCart(cartItem);
+    final success = await _cartService.addToCart(cartItem);
 
     if (success) {
       _showSnackbar(
@@ -173,8 +173,8 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Scaffold(
-      appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      appBar: UnionNavbar(),
+      drawer: MobileDrawer(),
       body: SingleChildScrollView(
         child: Column(
           children: [

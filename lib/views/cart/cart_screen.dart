@@ -573,6 +573,8 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildOrderSummary() {
+    final cartService = CartService();
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -587,18 +589,26 @@ class _CartScreenState extends State<CartScreen> {
                   ),
             ),
             const SizedBox(height: 16),
-            _buildSummaryRow('Subtotal', _total),
-            const SizedBox(height: 4),
-            Text(
-              '(includes VAT)',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                fontStyle: FontStyle.italic,
+            _buildSummaryRow('Subtotal', cartService.subtotal),
+            const SizedBox(height: 8),
+            _buildSummaryRow('VAT (20%)', cartService.tax),
+            const SizedBox(height: 8),
+            _buildSummaryRow('Shipping', cartService.shipping),
+            if (cartService.shipping == 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Free shipping on orders over £50',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green[700],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               ),
-            ),
             const Divider(height: 24),
-            _buildSummaryRow('Total', _total, isBold: true, isLarge: true),
+            _buildSummaryRow('Total', cartService.total,
+                isBold: true, isLarge: true),
           ],
         ),
       ),

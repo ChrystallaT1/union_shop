@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:union_shop/services/auth_service.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class MobileDrawer extends StatelessWidget {
   const MobileDrawer({super.key});
@@ -117,12 +118,46 @@ class MobileDrawer extends StatelessWidget {
           const Divider(),
 
           // Cart
-          ListTile(
-            leading: const Icon(Icons.shopping_cart),
-            title: const Text('Cart'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/cart');
+          ValueListenableBuilder<int>(
+            valueListenable: CartService().cartCountNotifier,
+            builder: (context, count, child) {
+              return ListTile(
+                leading: Stack(
+                  children: [
+                    const Icon(Icons.shopping_cart_outlined),
+                    if (count > 0)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            count > 99 ? '99+' : '$count',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                title: Text('Cart ${count > 0 ? '($count)' : ''}'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/cart');
+                },
+              );
             },
           ),
 
@@ -152,18 +187,48 @@ class MobileDrawer extends StatelessWidget {
               if (snapshot.data == null) return const SizedBox.shrink();
               return ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.red),
-                ),
+                title:
+                    const Text('Logout', style: TextStyle(color: Colors.red)),
                 onTap: () async {
-                  await AuthService().signOut();
-                  if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/',
-                      (route) => false,
-                    );
+                  Navigator.pop(context); // Close drawer first
+
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Logout'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: const Text('Logout'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true && context.mounted) {
+                    // ✅ Clear cart before logout
+                    await CartService().clearCartOnLogout();
+
+                    await AuthService().signOut();
+
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/', (route) => false);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Logged out successfully'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
                   }
                 },
               );

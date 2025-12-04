@@ -52,14 +52,21 @@ class _AccountDashboardState extends State<AccountDashboard> {
 
     if (confirm == true && mounted) {
       await _authService.signOut();
+
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-        Future.delayed(const Duration(milliseconds: 300), () {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          '/',
+          (route) => false,
+        );
+
+        // Wait a bit for navigation to complete, then show message
+        Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Logged out successfully'),
                 backgroundColor: Colors.green,
+                duration: Duration(seconds: 2),
               ),
             );
           }
@@ -102,8 +109,8 @@ class _AccountDashboardState extends State<AccountDashboard> {
     }
 
     return Scaffold(
-      appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      appBar: UnionNavbar(),
+      drawer: MobileDrawer(),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

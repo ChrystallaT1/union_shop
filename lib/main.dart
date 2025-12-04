@@ -14,12 +14,18 @@ import 'package:union_shop/views/personalization/print_shack_screen.dart';
 import 'package:union_shop/views/personalization/print_shack_about_screen.dart';
 import 'package:union_shop/views/account/account_dashboard.dart';
 import 'package:union_shop/views/account/edit_profile_screen.dart';
+import 'package:union_shop/services/cart_service.dart'; // ✅ Add this
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // ✅ Initialize cart
+  await CartService().initializeCart();
+
   runApp(const MyApp());
 }
 

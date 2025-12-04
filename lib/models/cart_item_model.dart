@@ -24,31 +24,29 @@ class CartItemModel {
   double get totalPrice =>
       (price + (personalization?.additionalCost ?? 0.0)) * quantity;
 
+  // Convert to JSON for local storage
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
       'productName': productName,
-      'productImage': productImage,
       'price': price,
+      'productImage': productImage,
       'selectedSize': selectedSize,
       'selectedColor': selectedColor,
       'quantity': quantity,
-      'personalization': personalization?.toJson(),
     };
   }
 
+  // Create from JSON
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
-      productId: json['productId'],
-      productName: json['productName'],
-      productImage: json['productImage'],
-      price: json['price'],
-      selectedSize: json['selectedSize'],
-      selectedColor: json['selectedColor'],
-      quantity: json['quantity'],
-      personalization: json['personalization'] != null
-          ? PersonalizationModel.fromJson(json['personalization'])
-          : null,
+      productId: json['productId'] ?? '',
+      productName: json['productName'] ?? '',
+      price: (json['price'] ?? 0.0).toDouble(),
+      productImage: json['productImage'] ?? '',
+      selectedSize: json['selectedSize'] ?? '',
+      selectedColor: json['selectedColor'] ?? '',
+      quantity: json['quantity'] ?? 1,
     );
   }
 

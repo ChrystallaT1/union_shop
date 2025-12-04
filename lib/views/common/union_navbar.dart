@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:union_shop/services/auth_service.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
   final bool highlightSale;
@@ -101,10 +102,47 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      IconButton(
-        icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
-        onPressed: () => Navigator.pushNamed(context, '/cart'),
-        tooltip: 'Shopping Cart',
+      // Cart button with badge
+      Stack(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart_outlined),
+            onPressed: () => Navigator.pushNamed(context, '/cart'),
+            tooltip: 'Cart',
+          ),
+          // Cart badge - now uses ValueNotifier
+          Positioned(
+            right: 8,
+            top: 8,
+            child: ValueListenableBuilder<int>(
+              valueListenable: CartService().cartCountNotifier,
+              builder: (context, count, child) {
+                if (count == 0) return const SizedBox.shrink();
+
+                return Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  child: Text(
+                    count > 99 ? '99+' : '$count',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       const SizedBox(width: 8),
     ];
@@ -122,4 +160,44 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  Future<void> _handleLogout(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      // ✅ Clear cart before logout
+      await CartService().clearCartOnLogout();
+
+      await AuthService().signOut();
+
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logged out successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
+  }
 }

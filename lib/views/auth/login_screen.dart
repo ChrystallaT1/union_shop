@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/services/auth_service.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,20 +33,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
       final error = await _authService.signIn(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
+        password: _passwordController.text.trim(),
       );
 
       setState(() => _isLoading = false);
 
       if (mounted) {
         if (error == null) {
+          // ✅ Sync cart after successful login
+          await CartService().syncCartOnLogin();
+
+          // ✅ Force reload to update UI
+          await CartService().initializeCart();
+
+          Navigator.pushReplacementNamed(context, '/');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pushReplacementNamed(context, '/');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -67,6 +74,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       if (error == null) {
+        // ✅ Sync cart after successful Google sign-in
+        await CartService().syncCartOnLogin();
+
+        // ✅ Force reload to update UI
+        await CartService().initializeCart();
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Signed in with Google!'),
@@ -121,8 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      appBar: UnionNavbar(),
+      drawer: MobileDrawer(),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),

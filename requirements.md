@@ -434,15 +434,15 @@ Full user authentication and account management system using Firebase Authentica
 
 #### Acceptance Criteria
 
-- [ ] Users can sign up with email and password
-- [ ] Users can log in with valid credentials
-- [ ] Users can log out successfully
-- [ ] Password reset functionality works via email
-- [ ] Account dashboard shows user information
-- [ ] Users can edit their profile information
-- [ ] Authentication state persists across sessions
-- [ ] Error messages are clear and helpful
-- [ ] Integration with Google/Facebook login (optional but recommended)
+- [✅] Users can sign up with email and password
+- [✅] Users can log in with valid credentials
+- [✅] Users can log out successfully
+- [✅] Password reset functionality works via email
+- [✅] Account dashboard shows user information
+- [✅] Users can edit their profile information
+- [✅] Authentication state persists across sessions
+- [✅] Error messages are clear and helpful
+- [✅] Integration with Google/Facebook login (optional but recommended)
 
 ---
 
@@ -463,15 +463,15 @@ Enhanced cart functionality including quantity editing, item removal, price calc
 
 #### Acceptance Criteria
 
-- [ ] Cart persists data using local storage or Firebase
-- [ ] Users can increment/decrement item quantities
-- [ ] Users can remove individual items
-- [ ] Users can clear entire cart
-- [ ] Price calculations are accurate (subtotal, tax, shipping, total)
-- [ ] Cart updates in real-time as changes are made
-- [ ] Cart displays item count badge in navbar
-- [ ] Empty cart message is displayed when cart is empty
-- [ ] Cart syncs across devices for logged-in users
+- [✅] Cart persists data using local storage or Firebase
+- [✅] Users can increment/decrement item quantities
+- [✅] Users can remove individual items
+- [✅] Users can clear entire cart
+- [✅] Price calculations are accurate (subtotal, tax, shipping, total)
+- [✅] Cart updates in real-time as changes are made
+- [✅] Cart displays item count badge in navbar
+- [✅] Empty cart message is displayed when cart is empty
+- [✅] Cart syncs across devices for logged-in users
 
 ---
 

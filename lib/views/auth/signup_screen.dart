@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:union_shop/views/common/union_navbar.dart';
 import 'package:union_shop/views/common/mobile_drawer.dart';
 import 'package:union_shop/services/auth_service.dart';
+import 'package:union_shop/services/cart_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -31,13 +32,23 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  Future<void> _handleSignup() async {
+  Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
+      if (_passwordController.text != _confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Passwords do not match'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       setState(() => _isLoading = true);
 
       final error = await _authService.signUp(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
+        password: _passwordController.text.trim(),
         name: _nameController.text.trim(),
       );
 
@@ -45,6 +56,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (mounted) {
         if (error == null) {
+          // ✅ Sync cart after successful signup
+          await CartService().syncCartOnLogin();
+
+          // ✅ Force reload to update UI
+          await CartService().initializeCart();
+
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -57,7 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.pushReplacementNamed(context, '/');
                   },
                   child: const Text('OK'),
                 ),
@@ -85,6 +102,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if (mounted) {
       if (error == null) {
+        // ✅ Sync cart after Google signup
+        await CartService().syncCartOnLogin();
+
+        // ✅ Force reload to update UI
+        await CartService().initializeCart();
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Signed up with Google!'),
@@ -106,8 +129,8 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      appBar: UnionNavbar(), // ✅ Removed const
+      drawer: MobileDrawer(), // ✅ Removed const
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -247,7 +270,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _handleSignup,
+                    onPressed: _isLoading
+                        ? null
+                        : _handleSignUp, // ✅ Using single method
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4d2963),
                       foregroundColor: Colors.white,

@@ -94,7 +94,7 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
-  void _addToCart() {
+  Future<void> _addToCart() async {
     if (_selectedSize == null) {
       _showErrorSnackbar('Please select a size');
       return;
@@ -130,7 +130,7 @@ class _ProductPageState extends State<ProductPage> {
       quantity: _quantity,
     );
 
-    final success = _cartService.addToCart(cartItem);
+    final success = await _cartService.addToCart(cartItem);
 
     if (success) {
       _showSuccessSnackbar(
@@ -187,16 +187,16 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: const UnionNavbar(),
-        drawer: const MobileDrawer(),
+        appBar: UnionNavbar(),
+        drawer: MobileDrawer(),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_errorMessage != null || _product == null) {
       return Scaffold(
-        appBar: const UnionNavbar(),
-        drawer: const MobileDrawer(),
+        appBar: UnionNavbar(), // ✅ Remove const
+        drawer: MobileDrawer(), // ✅ Remove const
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -221,8 +221,8 @@ class _ProductPageState extends State<ProductPage> {
     }
 
     return Scaffold(
-      appBar: const UnionNavbar(),
-      drawer: const MobileDrawer(),
+      appBar: UnionNavbar(), // ✅ Remove const
+      drawer: MobileDrawer(), // ✅ Remove const
       body: SingleChildScrollView(
         child: Column(
           children: [
