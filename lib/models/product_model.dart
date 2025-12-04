@@ -33,6 +33,25 @@ class ProductModel {
     this.popularity = 0,
   });
 
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      description: json['description'] ?? '',
+      price: json['price'] ?? 0.0,
+      collectionId: json['collectionId'] ?? '',
+      category: json['category'] ?? '',
+      sizes: json['sizes'] ?? [],
+      colors: json['colors'] ?? [],
+      stockQuantity: json['stockQuantity'] ?? 0,
+      dateAdded: json['dateAdded'] ?? DateTime.now(),
+      isOnSale: json['isOnSale'] ?? false,
+      salePrice: json['salePrice'] ?? null,
+      popularity: json['popularity'] ?? 0,
+    );
+  }
+
   double get displayPrice => isOnSale && salePrice != null ? salePrice! : price;
 
   String get discountPercentage {
