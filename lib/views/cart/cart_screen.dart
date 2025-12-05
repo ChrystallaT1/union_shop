@@ -578,7 +578,19 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildOrderSummary() {
-    final cartService = CartService();
+    // This is the total of all cart items (already includes VAT)
+    final cartTotal = _total;
+
+    // Calculate shipping
+    final shipping = cartTotal >= 50 ? 0.0 : 4.99;
+
+    // Final total is cart total + shipping
+    final finalTotal = cartTotal + shipping;
+
+    // Now extract the VAT component from the FINAL total (not just cart)
+    const vatRate = 0.20; // 20%
+    final vatAmount = finalTotal * (vatRate / (1 + vatRate));
+    final totalExVat = finalTotal - vatAmount;
 
     return Card(
       elevation: 2,
@@ -594,12 +606,25 @@ class _CartScreenState extends State<CartScreen> {
                   ),
             ),
             const SizedBox(height: 16),
-            _buildSummaryRow('Subtotal', cartService.subtotal),
+
+            // Items count
+            _buildInfoRow(
+              '${_cartService.itemCount} item(s)',
+              '',
+            ),
+
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+
+            // Show cart subtotal first
+            _buildSummaryRow('Subtotal', cartTotal),
             const SizedBox(height: 8),
-            _buildSummaryRow('VAT (20%)', cartService.tax),
-            const SizedBox(height: 8),
-            _buildSummaryRow('Shipping', cartService.shipping),
-            if (cartService.shipping == 0)
+
+            // Show shipping
+            _buildSummaryRow('Shipping', shipping),
+
+            if (shipping == 0)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
@@ -611,33 +636,115 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
               ),
-            const Divider(height: 24),
-            _buildSummaryRow('Total', cartService.total,
-                isBold: true, isLarge: true),
+            if (shipping > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Free shipping on orders over £50',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+
+            const Divider(height: 24, thickness: 2),
+
+            // Total
+            _buildSummaryRow('Total', finalTotal, isBold: true, isLarge: true),
+
+            const SizedBox(height: 16),
+
+            // VAT breakdown (informational only)
+            Text(
+              'VAT Breakdown:',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 4),
+            _buildSummaryRow('Total (excl. VAT)', totalExVat,
+                isSmall: true, isGrey: true),
+            const SizedBox(height: 4),
+            _buildSummaryRow('VAT (20%)', vatAmount,
+                isSmall: true, isGrey: true),
+
+            const SizedBox(height: 8),
+            Text(
+              'All prices include UK VAT at 20%',
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryRow(String label, double amount,
-      {bool isBold = false, bool isLarge = false}) {
+  // Helper method for info rows (non-price)
+  Widget _buildInfoRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
           style: TextStyle(
-            fontSize: isLarge ? 20 : 16,
+            fontSize: 14,
+            color: Colors.grey[700],
+          ),
+        ),
+        if (value.isNotEmpty)
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Updated summary row method
+  Widget _buildSummaryRow(
+    String label,
+    double amount, {
+    bool isBold = false,
+    bool isLarge = false,
+    bool isVat = false,
+    bool isSmall = false,
+    bool isGrey = false,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isLarge ? 20 : (isSmall ? 12 : 16),
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            color:
+                isGrey ? Colors.grey[600] : (isVat ? Colors.grey[600] : null),
           ),
         ),
         Text(
           '£${amount.toStringAsFixed(2)}',
           style: TextStyle(
-            fontSize: isLarge ? 20 : 16,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: isBold ? const Color(0xFF4d2963) : null,
+            fontSize: isLarge ? 20 : (isSmall ? 12 : 16),
+            fontWeight: isBold
+                ? FontWeight.bold
+                : (isVat ? FontWeight.normal : FontWeight.w500),
+            color: isBold
+                ? const Color(0xFF4d2963)
+                : (isGrey
+                    ? Colors.grey[600]
+                    : (isVat ? Colors.grey[700] : null)),
           ),
         ),
       ],
