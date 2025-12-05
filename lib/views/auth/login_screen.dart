@@ -40,10 +40,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         if (error == null) {
-          // ✅ Sync cart after successful login
+          //Sync cart after successful login
           await CartService().syncCartOnLogin();
 
-          // ✅ Force reload to update UI
+          //Force reload to update UI
           await CartService().initializeCart();
 
           Navigator.pushReplacementNamed(context, '/');
@@ -74,10 +74,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       if (error == null) {
-        // ✅ Sync cart after successful Google sign-in
+        // Sync cart after successful Google sign-in
         await CartService().syncCartOnLogin();
 
-        // ✅ Force reload to update UI
+        // Force reload to update UI
         await CartService().initializeCart();
 
         ScaffoldMessenger.of(context).showSnackBar(

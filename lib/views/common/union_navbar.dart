@@ -237,7 +237,7 @@ class UnionNavbar extends StatelessWidget implements PreferredSizeWidget {
     );
 
     if (confirm == true) {
-      // ✅ Clear cart before logout
+      //Clear cart before logout
       await CartService().clearCartOnLogout();
 
       await AuthService().signOut();

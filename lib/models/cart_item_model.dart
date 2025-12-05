@@ -1,15 +1,22 @@
 import 'package:union_shop/models/personalization_model.dart';
 
+/// Model class representing an item in the shopping cart
+/// Stores product information, user selections (size, color), and optional personalization
 class CartItemModel {
   final String productId;
   final String productName;
   final String productImage;
+
   final double price;
   final String selectedSize;
+
   final String selectedColor;
+
   int quantity;
   final PersonalizationModel? personalization;
 
+  /// Creates a new cart item with all required product details and user selections
+  /// [quantity] defaults to 1
   CartItemModel({
     required this.productId,
     required this.productName,
@@ -21,10 +28,12 @@ class CartItemModel {
     this.personalization,
   });
 
+  /// Calculate the total price for this cart item
   double get totalPrice =>
       (price + (personalization?.additionalCost ?? 0.0)) * quantity;
 
-  // Convert to JSON for local storage
+  /// Convert cart item to JSON format for local storage
+  /// Note: Personalization is not included in basic JSON serialization
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
@@ -37,7 +46,8 @@ class CartItemModel {
     };
   }
 
-  // Create from JSON
+  /// Create a CartItemModel from JSON data (deserialization)
+  /// Used when loading saved cart from local storage
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
       productId: json['productId'] ?? '',

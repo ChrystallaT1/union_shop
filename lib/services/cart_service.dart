@@ -289,11 +289,11 @@ class CartService {
         // Clear local storage after syncing
         await prefs.remove('guest_cart');
       } else {
-        // ✅ No local cart, just load from Firebase
+        //No local cart, just load from Firebase
         await _loadFromFirebase(user.uid);
       }
 
-      // ✅ Update cart count notifier
+      // Update cart count notifier
       cartCountNotifier.value = itemCount;
     } catch (e) {
       print('Error syncing cart: $e');

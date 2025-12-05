@@ -13,8 +13,12 @@ class AccountDashboard extends StatefulWidget {
 }
 
 class _AccountDashboardState extends State<AccountDashboard> {
+  /// Service for handling authentication operations (login, logout, user data)
   final _authService = AuthService();
+
+  /// Stores additional user data fetched from Firestore
   Map<String, dynamic>? _userData;
+
   bool _isLoading = true;
 
   @override
@@ -24,6 +28,7 @@ class _AccountDashboardState extends State<AccountDashboard> {
   }
 
   Future<void> _loadUserData() async {
+    // Get user data from AuthService (which queries Firestore)
     final data = await _authService.getUserData();
     setState(() {
       _userData = data;
@@ -51,15 +56,16 @@ class _AccountDashboardState extends State<AccountDashboard> {
     );
 
     if (confirm == true && mounted) {
+      // Sign out from Firebase Authentication
       await _authService.signOut();
 
+      // Navigate to home screen and clear navigation stack
       if (mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil(
-          '/',
+          '/', // Navigate to home screen
           (route) => false,
         );
 
-        // Wait a bit for navigation to complete, then show message
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +100,8 @@ class _AccountDashboardState extends State<AccountDashboard> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
+
+              // Button to navigate to login screen
               ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/login'),
                 style: ElevatedButton.styleFrom(
@@ -107,7 +115,6 @@ class _AccountDashboardState extends State<AccountDashboard> {
         ),
       );
     }
-
     return Scaffold(
       appBar: UnionNavbar(),
       drawer: MobileDrawer(),
@@ -156,6 +163,8 @@ class _AccountDashboardState extends State<AccountDashboard> {
                               color: Colors.white70,
                             ),
                           ),
+
+                          // Show warning badge if email is not verified
                           if (!user.emailVerified) ...[
                             const SizedBox(height: 16),
                             Container(
@@ -199,6 +208,7 @@ class _AccountDashboardState extends State<AccountDashboard> {
                               value: user.displayName ?? 'Not set',
                             ),
                             const SizedBox(height: 16),
+
                             _buildInfoCard(
                               icon: Icons.email,
                               title: 'Email',
@@ -241,6 +251,7 @@ class _AccountDashboardState extends State<AccountDashboard> {
                               },
                             ),
                             const SizedBox(height: 12),
+                            // Change Password button - sends password reset email
                             _buildActionButton(
                               icon: Icons.lock,
                               label: 'Change Password',
@@ -260,6 +271,7 @@ class _AccountDashboardState extends State<AccountDashboard> {
                               },
                             ),
                             const SizedBox(height: 12),
+
                             _buildActionButton(
                               icon: Icons.logout,
                               label: 'Logout',
@@ -319,6 +331,7 @@ class _AccountDashboardState extends State<AccountDashboard> {
     );
   }
 
+  /// Used for Edit Profile, Order History, Change Password, Logout
   Widget _buildActionButton({
     required IconData icon,
     required String label,
