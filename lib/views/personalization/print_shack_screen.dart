@@ -43,8 +43,8 @@ class _PrintShackScreenState extends State<PrintShackScreen> {
   final Map<String, double> _products = {
     'T-Shirt': 19.99,
     'Hoodie': 39.99,
-    'Mug': 9.99,
-    'Tote Bag': 14.99,
+    'Backpack': 24.99,
+    'Notebook': 8.99,
     'Water Bottle': 12.99,
   };
 
